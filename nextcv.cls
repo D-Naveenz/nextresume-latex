@@ -28,13 +28,15 @@
 \DeclareOption{withhyper}{\bool_gset_true:N \g_withhyper_bool}
 
 %% Hide field names in TokenGrid (show only icons)
-\bool_new:N \g_hidefieldnames_bool
-\DeclareOption{hidefieldnames}{\bool_gset_true:N \g_hidefieldnames_bool}
+\bool_new:N \g_fieldnames_bool
+\DeclareOption{fieldnames}{\bool_gset_true:N \g_fieldnames_bool}
 
 \ProcessOptions\relax
 
 \LoadClass{article}
 
+% Load Lua support
+\RequirePackage{luacode}
 %% Make files more 'friendly' with copy-paste etc
 \RequirePackage{xcolor,accsupp,xparse,hyperref,hyperxmp,setspace}
 \RequirePackage[margin=2cm]{geometry}
@@ -44,8 +46,6 @@
 % Load required packages
 \RequirePackage{fontspec}
 \RequirePackage{svg}
-% Use standard fontawesome5 for now instead of custom implementation
-\RequirePackage{fontawesome5}
 
 % Change the font if you want to, depending on whether you're using xelatex/lualatex
 % Here we set Aptos (the default Microsoft font) as the main font for the Next Resume theme
@@ -109,11 +109,9 @@
 \RequirePackage{array}
 
 %% ============= Personal Info Data Structure (Lua Implementation) =============
-% Load Lua support
-\RequirePackage{luacode}
 
 % Define boolean values for Lua
-\newcommand{\resume@hidefieldnamesvalue}{\bool_if:NT \g_hidefieldnames_bool { true } \bool_if:NF \g_hidefieldnames_bool { false }}
+\newcommand{\resume@hidefieldnamesvalue}{\bool_if:NT \g_fieldnames_bool { false } \bool_if:NF \g_fieldnames_bool { true }} % Inverted logic for fieldnames option
 \newcommand{\resume@withhypervalue}{\bool_if:NT \g_withhyper_bool { true } \bool_if:NF \g_withhyper_bool { false }}
 
 \begin{luacode*}
@@ -129,19 +127,19 @@ next_personal_info = TokenGrid:new("\\resume@hidefieldnamesvalue", "\\resume@wit
   \IfBooleanTF{#1}
     {% Starred version: full URL mode
      \directlua{
-       next_personal_info:create_info_field("#2", "#3", "fullurl")
+       next_personal_info:create_info_field("#2", "\luaescapestring{\unexpanded{#3}}", "fullurl")
      }%
     }
     {% Unstarred version: prefix mode
      \IfValueTF{#4}
        {% With hyperlink prefix
         \directlua{
-          next_personal_info:create_info_field("#2", "#3", "prefix", "#4")
+          next_personal_info:create_info_field("#2", "\luaescapestring{\unexpanded{#3}}", "prefix", "\detokenize{#4}")
         }%
        }
        {% Without hyperlink prefix  
         \directlua{
-          next_personal_info:create_info_field("#2", "#3", "noprefix")
+          next_personal_info:create_info_field("#2", "\luaescapestring{\unexpanded{#3}}", "noprefix")
         }%
        }%
     }%
@@ -186,7 +184,7 @@ next_personal_info = TokenGrid:new("\\resume@hidefieldnamesvalue", "\\resume@wit
   
   % Define the actual field commands after fontawesome is loaded
   % Use simple ASCII symbols - FontAwesome icons have Lua escaping issues
-  \NewInfoField{email}{@}[mailto:]%
+  \NewInfoField{email}{\includesvg[height=1em]{./icons/circle.svg}}[mailto:]%
   \NewInfoField{mailaddress}{E}%  
   \NewInfoField{phone}{P}[tel:]%
   \NewInfoField{homepage}{H}[https://]%
