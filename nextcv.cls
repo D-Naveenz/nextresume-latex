@@ -30,42 +30,12 @@
 
 \LoadClass{article}
 
+% Load the Next Theme Package
+\RequirePackage{nexttheme}
+
 %% file more 'friendly' with copy-paste etc
 \RequirePackage{xcolor,accsupp,xparse,hyperref,hyperxmp,setspace}
 \RequirePackage[margin=2cm]{geometry}
-
-%% NextCV is only compatible with XeLaTeX or LuaLaTeX
-\bool_lazy_or:nnTF {\sys_if_engine_xetex_p:} {\sys_if_engine_luatex_p:}
-{
-  \RequirePackage{fontspec}
-  \RequirePackage{fontawesome/6}  %% added fontawesome6 for more icons
-}
-{
-  \ClassError{nextcv}{NextCV~is~only~compatible~with~XeLaTeX~or~LuaLaTeX.}{}
-}
-
-% Change the font if you want to, depending on whether you're using xelatex/lualatex
-% WHEN COMPILING WITH XELATEX PLEASE USE
-% xelatex -shell-escape -output-driver="xdvipdfmx -z 0" sample.tex
-\setmainfont{Aptos}[
-  Path           =./fonts/Aptos/,
-  Extension      =.ttf,
-  UprightFont    =*,
-  ItalicFont     =*-Italic,
-  BoldFont       =*-Bold,
-  BoldItalicFont =*-Bold-Italic,
-]
-
-%% Define the color scheme
-\colorlet{accent}{blue!70!black}
-\colorlet{emphasis}{black}
-\colorlet{heading}{black}
-\colorlet{headingrule}{black}
-\colorlet{subheading}{emphasis}
-\colorlet{body}{black!80!white}
-\colorlet{name}{heading}
-\colorlet{tagline}{accent}
-\colorlet{link}{blue}
 
 \bool_if:NT \g_raggedtwoe_bool {\RequirePackage[newcommands]{ragged2e}}
 
@@ -73,26 +43,7 @@
   \AtEndPreamble{\hypersetup{colorlinks=true, linkcolor=link, urlcolor=link}}
 }
 
-\newcommand{\cvItemMarker}{{\small\textbullet}}
-\newcommand{\cvRatingMarker}{\large\textbf{\faIcon{circle}}}
-\let\itemmarker\cvItemMarker      % for backward compatibility
-\let\ratingmarker\cvRatingMarker  % for backward compatibility
-\newcommand{\cvDateMarker}{\faIcon{calendar}}
-\newcommand{\cvLocationMarker}{\textbf{\faIcon{location-dot}}}
-\newcommand{\cvCertificateMarker}{\textbf{\faIcon{certificate}}}
-\newcommand{\cvProjectLinkMarker}{\faIcon{github}}
-\newcommand{\cvProjectRoleMarker}{\textbf{\faIcon{user}}}
-\newcommand{\cvProjectMarker}{\textbf{\faIcon{folder-tree}}}
-\newcommand{\locationname}{Location}
-\newcommand{\datename}{Date}
-\newcommand{\rolename}{Role}
-\newcommand{\projectlink}{Project Link}
-
 \RequirePackage{tikz}
-%\RequirePackage[skins]{tcolorbox}
-\RequirePackage[inline]{enumitem}
-\setlist{leftmargin=*,labelsep=0.5em,nosep,itemsep=0.25\baselineskip,after=\vspace{0.25\baselineskip}}
-\setlist[itemize]{label=\cvItemMarker}
 \RequirePackage{dashrule}
 \RequirePackage{multirow,tabularx}
 \RequirePackage{graphicx}
@@ -100,113 +51,40 @@
 \RequirePackage{listofitems} % String splitter
 \RequirePackage{array}
 
-%% ============= Personal Info Data Structures =============
-\prop_new:N \l_info_symbols_prop % Property list for storing symbols
+%% ============= Personal Info Data Structure (Lua Implementation) =============
+\RequirePackage{luacode}
 
-\NewDocumentCommand{\cv@info@getsymbol}{m}{%
-  \prop_if_in:NnTF \l_info_symbols_prop {#1}
-  { \prop_item:Nn \l_info_symbols_prop {#1} }
-  { \ClassError{nextcv}{Unknown~symbol~'#1'}{} }
+% Load the Lua module and create an instance for personal info management
+\directlua{
+  local TokenGrid = require('next_tokengrid')
+  next_personal_info = TokenGrid:new(true, \bool_if:NTF \g_withhyper_bool {true}{false})
 }
 
-\seq_new:N \l_info_fields_list  % Sequence for storing contact info fields
-
-\NewDocumentCommand{\cv@info@setfield}{m}{%
-  \seq_put_right:Nn \l_info_fields_list {#1}
+% Main command to print the personal info fields in a table
+\NewDocumentCommand{\resume@info@printfields}{m}{%
+  \directlua{next_personal_info:build_grid(#1)}%
 }
 
-% Define the command to print the sequence in a table
-\NewDocumentCommand{\cv@info@printfields}{m}{%
-  \int_new:N \l_tmp_int
-  \int_set:Nn \l_tmp_int {1}
-
-  \begin{tabular}{*{#1}{l}} % Defines a table with #1 columns
-    \seq_map_inline:Nn \l_info_fields_list {%
-      ##1 % Print the current item
-
-      % Check if it's the last element or if a new row should start
-      \int_compare:nNnTF { \l_tmp_int } = { \seq_count:N \l_info_fields_list }
-      {
-        % Last item, do nothing
-      }
-      {
-        \int_compare:nNnTF { \int_mod:nn { \l_tmp_int } { #1 } } = { 0 }
-        {
-          \\ % End of row if this is the last item in the row
-        }
-        {
-          & % Otherwise, add column separator
-        }
-      }
-
-      \int_gincr:N \l_tmp_int % global increment
-    }
-  \end{tabular}
+% Utility command to clear all fields
+\NewDocumentCommand{\resume@info@clearfields}{}{%
+  \directlua{next_personal_info:clear_fields()}%
 }
-%% ============= Personal Info Data Structures =============
 
-%% using \detokenize to avoid breaking unicode
-%% Use accsupp so that when copying/pasting the icon from PDF to a text file, the icon name is pasted
-%% \@printinfo{<fieldname>}{<text>}[<hyperlink>]
-\NewDocumentCommand{\@printinfo}{m m o}{%
-  \tl_if_blank:nTF {#3}{%
-    \mbox{\textcolor{accent}%
-      {\BeginAccSupp{method=escape,ActualText={#1:}}\normalfont\cv@info@getsymbol{#1}\EndAccSupp{}}%
-      ~\hspace{0.3em}\detokenize{#2}\hspace{2em}}%
-  }{%
-    \bool_if:NTF \g_withhyper_bool
-    {
-      \mbox{\textcolor{accent}%
-        {\BeginAccSupp{method=escape,ActualText={#1:}}\normalfont\cv@info@getsymbol{#1}\EndAccSupp{}}%
-        ~\hspace{0.3em}\href{#3}{\detokenize{#2}}\hspace{2em}}%
-    }
-    {
-      \ClassWarning{Please specify [withhyper] option to enable hyperlinks. Printing out full hyperlink prefix #1 for now.}%
-      \mbox{\textcolor{accent}
-        {\BeginAccSupp{method=escape,ActualText={#1:}}\normalfont\cv@info@getsymbol{#1}\EndAccSupp{}}%
-        ~\hspace{0.3em}{\detokenize{#3#2}}\hspace{2em}}%
-    }
-  }%  
-}%
-
-%% This command is a higher-level utility for defining new fields (e.g., email, phone) with associated symbols and optional hyperlink prefixes.
-%% Added starred mode to create \printinfo with full URL
-%% \NewInfoField{<fieldname>}{<symbol>}[<hyperlink prefix>]
-%% \NewInfoField*{<fieldname>}{<symbol>}
+% This command is a higher-level utility for defining new fields (e.g., email, phone) with associated symbols and optional hyperlink prefixes.
+% Added starred mode to create \printinfo with full URL
+% \NewInfoField{<fieldname>}{<symbol>}[<hyperlink prefix>]
+% \NewInfoField*{<fieldname>}{<symbol>}
 \NewDocumentCommand{\NewInfoField}{s m m o}{%
-  % Push the symbol to the property list
-  \prop_gput:Nnn \l_info_symbols_prop {#2} {#3}%
-
-  % If the star argument is present
-  \IfBooleanTF{#1}
-  {
-    % If the star argument is present, define a command that takes two arguments
-    \cs_new_protected:cpn {#2}##1##2{%
-      \cv@info@setfield{\@printinfo{#2}{##1}[##2]}%
-
-      % Create a read-only global command to store the data
-      \cs_gset:cpn {#2_data} {\detokenize{##1}}
-    }
-  }
-  {
-    % If the star argument is not present, define a command that takes one argument
-    \cs_new_protected:cpn {#2}##1{%
-      % Combined condition: if @withhyper is true AND hyperprefix is not null
-      \bool_lazy_and:nnTF { \g_withhyper_bool } { !\tl_if_blank_p:n {#4} }
-      {
-        % Print the info with the symbol and hyperprefix
-        \cv@info@setfield{\@printinfo{#2}{##1}[#4##1]}%
-      }
-      {
-        % Otherwise, print the info with the symbol
-        \cv@info@setfield{\@printinfo{#2}{##1}}%
-      }%
-
-      % Create a read-only global command to store the data
-      \cs_gset:cpn {#2_data} {\detokenize{##1}}
-    }
-  }
+  % Create the field directly via Lua - no need for complex LaTeX logic
+  \directlua{
+    local field_name = '#2'
+    local symbol = [==[#3]==]
+    local custom_hyper = \IfBooleanTF{#1}{true}{false}
+    local hyperlink_prefix = \tl_if_blank:nTF {#4} { '' } { [==[#4]==] }
+    next_personal_info:create_info_field(field_name, symbol, custom_hyper, hyperlink_prefix)
+  }%
 }
+%% ============= Personal Info Data Structure (Lua Implementation) =============
 
 %% Declare contact info fields
 \NewInfoField{email}{\faIcon{at}}[mailto:]

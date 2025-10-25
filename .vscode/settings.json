@@ -35,5 +35,10 @@
                 "pdflatex"
             ]
         }
-    ]
+    ],
+    "Lua.workspace.library": [
+        "${addons}/tex-lualatex/module/library",
+        "${addons}/tex-luatex/module/library"
+    ],
+    "Lua.workspace.checkThirdParty": false
 }

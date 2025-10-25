@@ -1,0 +1,86 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{nexttheme}[2025/10/24 v1.0 Next Resume Theme Package. Implements the colors, fonts, and styles for the Next Resume theme.]
+
+\ExplSyntaxOn
+% Next Theme Package only compatible with LuaLaTeX
+\bool_lazy_or:nTF
+  {
+    \sys_if_engine_luatex_p:
+  }
+  { }
+  {
+    % If not LuaLaTeX, throw an error
+    \msg_error:nnn { nexttheme } { incompatible-engine }
+      { This~package~requires~LuaLaTeX.~Please~compile~your~document~with~one~of~these~engines. }
+  }
+
+% Load required packages
+\RequirePackage{fontspec}
+\RequirePackage{xcolor}
+\RequirePackage{svg}
+
+% Change the font if you want to, depending on whether you're using xelatex/lualatex
+% Here we set Aptos (the default Microsoft font) as the main font for the Next Resume theme
+\setmainfont{Aptos}[
+  Path           =./fonts/Aptos/,
+  Extension      =.ttf,
+  UprightFont    =*,
+  ItalicFont     =*-Italic,
+  BoldFont       =*-Bold,
+  BoldItalicFont =*-Bold-Italic,
+]
+
+% Set header font to Montserrat
+\newfontfamily\headerfont{Montserrat}[
+  Path           =./fonts/Montserrat/static/,
+  Extension      =.ttf,
+  UprightFont    =*-Regular,
+  ItalicFont     =*-Italic,
+  BoldFont       =*-Bold,
+  BoldItalicFont =*-BoldItalic,
+]
+
+% Define the default color scheme
+\colorlet{accent}{blue!70!black}
+\colorlet{emphasis}{black}
+\colorlet{heading}{black}
+\colorlet{headingrule}{black}
+\colorlet{subheading}{emphasis}
+\colorlet{body}{black!80!white}
+\colorlet{name}{heading}
+\colorlet{tagline}{accent}
+\colorlet{link}{blue}
+
+% Define styles for markers
+\newcommand{\next_ItemMarker}{{\small\textbullet}}
+\newcommand{\next_RatingMarker}{\includesvg[width=1em]{./icons/circle.svg}}
+\newcommand{\next_DateMarker}{\faIcon{calendar}}
+\newcommand{\next_LocationMarker}{\textbf{\faIcon{location-dot}}}
+\newcommand{\next_CertificateMarker}{\textbf{\faIcon{certificate}}}
+\newcommand{\next_ProjectLinkMarker}{\faIcon{github}}
+\newcommand{\next_ProjectRoleMarker}{\textbf{\faIcon{user}}}
+\newcommand{\next_ProjectMarker}{\textbf{\faIcon{folder-tree}}}
+
+% Define text styles
+\newcommand{\next_NameStyle}[1]{{\Huge\bfseries\color{name}\MakeUppercase{#1}}}
+\newcommand{\next_TaglineStyle}[1]{{\large\itshape\color{tagline}#1}}
+\newcommand{\next_PersonalInfoStyle}[1]{{\footnotesize\bfseries#1}}
+\newcommand{\next_H1}[1]{{\headerfont\LARGE\bfseries\color{heading}\MakeUppercase{#1}}}
+\newcommand{\next_H2}[1]{{\headerfont\Large\bfseries\color{heading}#1}}
+
+% Customize itemize and enumerate environments
+\RequirePackage[inline]{enumitem}
+\setlist{leftmargin=*,labelsep=0.5em,nosep,itemsep=0.25\baselineskip,after=\vspace{0.25\baselineskip}}
+\setlist[itemize]{label=\cvItemMarker}
+
+% Define stlyles for headings and sections
+\newcommand{\nextsection}[1]{%
+  \nointerlineskip% Remove unintended space before section
+  \vspace{12pt}%
+  {\headerfont\Large\bfseries\color{heading}#1}%
+  \par\vspace{6pt}%
+  \hrule height 1pt \color{headingrule}%
+  \par\vspace{12pt}%
+}
+
+\ExplSyntaxOff
