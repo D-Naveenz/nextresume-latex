@@ -38,14 +38,22 @@
 % Load Lua support
 \RequirePackage{luacode}
 %% Make files more 'friendly' with copy-paste etc
-\RequirePackage{xcolor,accsupp,xparse,hyperref,hyperxmp,setspace}
+\RequirePackage{xcolor,accsupp,xparse}
+
+% Set hyperref options before loading the package to avoid duplicate option warnings
+\bool_if:NT \g_withhyper_bool {
+  \PassOptionsToPackage{colorlinks=true}{hyperref}
+}
+
+\RequirePackage{hyperref,hyperxmp,setspace}
 \RequirePackage[margin=2cm]{geometry}
 
 \bool_if:NT \g_raggedtwoe_bool {\RequirePackage[newcommands]{ragged2e}}
 
 % Load required packages
 \RequirePackage{fontspec}
-\RequirePackage[inkscapelatex=false]{svg}
+\RequirePackage{graphicx} %  pass svg options to package graphicx
+\RequirePackage{svg}
 
 % Change the font if you want to, depending on whether you're using xelatex/lualatex
 % Here we set Aptos (the default Microsoft font) as the main font for the Next Resume theme
@@ -80,7 +88,7 @@
 
 % Define styles for markers
 \newcommand{\nextItemMarker}{{\small\textbullet}}
-\newcommand{\nextRatingMarker}{\faIcon{circle}}
+\newcommand{\nextRatingMarker}{\nextSVGIcon{circle}}
 \newcommand{\nextDateMarker}{\faIcon{calendar}}
 \newcommand{\nextLocationMarker}{\textbf{\faIcon{map-marker-alt}}}
 \newcommand{\nextCertificateMarker}{\textbf{\faIcon{certificate}}}
@@ -103,11 +111,17 @@
 \RequirePackage{tikz}
 \RequirePackage{dashrule}
 \RequirePackage{multirow,tabularx}
-\RequirePackage{graphicx}
 \RequirePackage[export]{adjustbox}
 \RequirePackage{listofitems} % String splitter
 \RequirePackage{array}
 \RequirePackage{tabularray} % For better tables
+
+\NewDocumentCommand{\nextSVGIcon}{m O{1.2em}}{%
+  \begingroup%
+  \def\@TexIconPath{./icons/#1.svg}%
+  \includesvg[height=#2]{\@TexIconPath}
+  \endgroup%
+}
 
 %% ============= Personal Info Data Structure (Lua Implementation) =============
 
@@ -178,28 +192,36 @@ next_personal_info = TokenGrid:new("\\resume@hidefieldnamesvalue", "\\resume@wit
 
 % Define info field commands at begin document to ensure all packages are loaded
 \AtBeginDocument{%
-  % Set up hyperref if withhyper option is enabled
-  \bool_if:NT \g_withhyper_bool {
-    \hypersetup{colorlinks=true, linkcolor=link, urlcolor=link}
-  }
-  
   % Define the actual field commands after fontawesome is loaded
   % Use simple ASCII symbols - FontAwesome icons have Lua escaping issues
-  \NewInfoField{email}{\includesvg[height=1em]{./icons/circle.svg}}[mailto:]%
-  \NewInfoField{mailaddress}{E}%  
-  \NewInfoField{phone}{P}[tel:]%
-  \NewInfoField{homepage}{H}[https://]%
-  \NewInfoField{twitter}{T}[https://x.com/]%
-  \NewInfoField{linkedin}{L}[https://linkedin.com/in/]%
-  \NewInfoField{github}{G}[https://github.com/]%
-  \NewInfoField{medium}{M}[https://medium.com/]%
-  
-  % Set XMP metadata using hyperxmp
-  \hypersetup{
-    pdfauthor={\@name},
-    pdftitle={\@jobtitle},
-    pdfsubject={Resume~of~\@name},
-    pdfkeywords={Resume,~CV,~\@jobtitle,~\@name}
+  \NewInfoField{email}{\nextSVGIcon{email}}[mailto:]%
+  \NewInfoField{mailaddress}{\nextSVGIcon{mail}}%
+  \NewInfoField{phone}{\nextSVGIcon{call}}[tel:]%
+  \NewInfoField{homepage}{\nextSVGIcon{internet}}[https://]%
+  \NewInfoField{twitter}{\nextSVGIcon{twitter}}[https://x.com/]%
+  \NewInfoField{linkedin}{\nextSVGIcon{linkedin}}[https://linkedin.com/in/]%
+  \NewInfoField{github}{\nextSVGIcon{github}}[https://github.com/]%
+  \NewInfoField{medium}{\nextSVGIcon{medium}}[https://medium.com/]%
+
+  % Set up hyperref configuration (combining color setup with metadata)  
+  \bool_if:NTF \g_withhyper_bool {
+    % Set XMP metadata using hyperxmp with link colors
+    \hypersetup{
+      linkcolor=link, 
+      urlcolor=link,
+      pdfauthor={\@name},
+      pdftitle={\@jobtitle},
+      pdfsubject={Resume~of~\@name},
+      pdfkeywords={Resume,~CV,~\@jobtitle,~\@name}
+    }
+  }{
+    % Set XMP metadata using hyperxmp only
+    \hypersetup{
+      pdfauthor={\@name},
+      pdftitle={\@jobtitle},
+      pdfsubject={Resume~of~\@name},
+      pdfkeywords={Resume,~CV,~\@jobtitle,~\@name}
+    }
   }
   
   % Define the print fields command
