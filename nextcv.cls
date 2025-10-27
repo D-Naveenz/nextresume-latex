@@ -38,7 +38,7 @@
 % Load Lua support
 \RequirePackage{luacode}
 %% Make files more 'friendly' with copy-paste etc
-\RequirePackage{xcolor,accsupp,xparse}
+\RequirePackage{xparse}
 
 % Set hyperref options before loading the package to avoid duplicate option warnings
 \bool_if:NT \g_withhyper_bool {
@@ -52,9 +52,21 @@
 
 % Load required packages
 \RequirePackage{fontspec}
-\RequirePackage{graphicx} %  pass svg options to package graphicx
-\RequirePackage{svg}
 \RequirePackage{multicol}
+
+% Configure multicols spacing to reduce gaps
+\setlength{\multicolsep}{0.5\baselineskip} % this can be adjusted (ex: 0.5\baselineskip plus 0.2\baselineskip minus 0.1\baselineskip)
+\setlength{\columnsep}{1.2em}    % Space between columns
+
+\RequirePackage{graphicx}        % For image inclusion and clipping
+\RequirePackage{svg}             %  pass svg options to package graphicx
+\RequirePackage[export]{adjustbox} % For advanced image adjustments like clipbox
+\RequirePackage{xcolor}          % For color definitions (e.g., \color{accent})
+\RequirePackage{pgffor}          % For \foreach loops
+\RequirePackage{ifthen}          % For conditional logic (optional but useful)
+\RequirePackage{accsupp}         % For accessibility support (e.g., screen readers)
+\RequirePackage{xfp}             % For floating point math (more reliable than \ifdim)
+\RequirePackage{tabularray}      % For the tblr environment (modern table formatting)
 
 % Change the font if you want to, depending on whether you're using xelatex/lualatex
 % Here we set Aptos (the default Microsoft font) as the main font for the Next Resume theme
@@ -110,12 +122,9 @@
 \setlist[itemize]{label=\nextItemMarker}
 
 \RequirePackage{tikz}
-\RequirePackage{dashrule}
 \RequirePackage{multirow,tabularx}
-\RequirePackage[export]{adjustbox}
 \RequirePackage{listofitems} % String splitter
 \RequirePackage{array}
-\RequirePackage{tabularray} % For better tables
 
 \NewDocumentCommand{\nextSVGIcon}{m O{1.2em}}{%
   \begingroup%
@@ -131,8 +140,12 @@
 \newcommand{\resume@withhypervalue}{\bool_if:NT \g_withhyper_bool { true } \bool_if:NF \g_withhyper_bool { false }}
 
 \begin{luacode*}
-TokenGrid = require("next_tokengrid")
-next_personal_info = TokenGrid:new("\\resume@hidefieldnamesvalue", "\\resume@withhypervalue")
+  -- Load LUA libraries
+  TokenGrid = require("next_tokengrid")
+  RatingBox = require("next_ratingbox")
+
+  -- Create a new TokenGrid instance for personal info
+  next_personal_info = TokenGrid:new("\\resume@hidefieldnamesvalue", "\\resume@withhypervalue")
 \end{luacode*}
 
 % This command is a higher-level utility for defining new fields (e.g., email, phone) with associated symbols and optional hyperlink prefixes.
@@ -229,7 +242,7 @@ next_personal_info = TokenGrid:new("\\resume@hidefieldnamesvalue", "\\resume@wit
   % Add the section title in a table to align with the icon if provided
   \IfValueTF{#2}{%
     \begin{tblr}{stretch = 0, colspec = {Q[h,l]l}, colsep=0.4em}%
-      #2 & \nextHeadingStyle{\MakeUppercase{#1}}\\
+      #2 & \nextHeadingStyle{#1}\\
     \end{tblr}%
   }{%
     \nextHeadingStyle{\MakeUppercase{#1}}
@@ -302,40 +315,39 @@ next_personal_info = TokenGrid:new("\\resume@hidefieldnamesvalue", "\\resume@wit
 % Resume Skills Environment. Use \columnbreak to break columns manually.
 % Parameters: [number of columns (default 1)]
 \NewDocumentEnvironment{nextskills}{ O{1} }{%
+  \directlua{rating_box = RatingBox:new("accent", "body!30", 5)}%
+
   % Add a skill with weighted rating
   % Use accsupp so that the actual numeric value is copied/pasted and also support 0.5, 1.5, 2.5, 3.5, 4.5
   % Parameters: <skill name> <rating out of 5>
   \newcommand{\weightedskill}[2]{%
-    {\color{emphasis}##1}\hfill
-    \BeginAccSupp{method=plain,ActualText={##2}}
-    \foreach \x in {1,...,5}{%
-      \ifdimequal{\x pt - ##2 pt}{0.5pt}{%
-        % if true, then print half-filled marker
-        \clipbox*{0pt -0.25ex {.5\width} {\totalheight}}{\color{accent}{\nextRatingMarker}}%
-        \clipbox*{{.5\width} -0.25ex {\width} {\totalheight}}{\color{body!30}{\nextRatingMarker}}%
-      }{%
-        % if false, then print marker filled according to rating
-        \ifdimgreater{\x bp}{##2 bp}{\color{body!30}}{\color{accent}}{\nextRatingMarker}
-      }%
-      \hspace{1em}% Add space between markers (adjust the value as needed)
+    \def\skillname{\color{emphasis}##1}%
+    \def\rating{%
+      \directlua{tex.sprint(rating_box:render_rating(##2))}%
     }%
-    \EndAccSupp{}
+    \noindent%
+    \begin{tblr}{width=\dimexpr\columnwidth-2em\relax, colspec={ l X[l] Q[h,r] }, colsep=0pt}%
+      \skillname & & \rating \\
+    \end{tblr}%
     \par\vspace{1ex}%
   }
 
-  \newcommand{\skill}[1]{##1,}
+  %\hspace{1em}% Add space between markers (adjust the value as needed)
 
   % Skill Section Environment
   \NewDocumentEnvironment{skillsection}{ m O{1em} }{%
     % Prevent column breaks within skill sections
     \begin{minipage}[t]{\dimexpr\columnwidth-3pt\relax} % [t] for top alignment
       {\large\textcolor{emphasis}{\bfseries-- \MakeUppercase{##1}}}\par%
+      \smallskip
       \def\contentwidth{\dimexpr\linewidth-##2\relax}%
       \hfill
       \begin{minipage}[t]{\contentwidth} % [t] for top alignment
+        \RaggedRight%
   }{%
       \end{minipage}
     \end{minipage}
+    \par\medskip%
   }%
 
   \begin{nextsection}{Skills}[\nextSVGIcon{email}]%
