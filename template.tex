@@ -58,33 +58,37 @@
 % \renewcommand{\cvDateMarker}{\faCalendar*[regular]}
 % \renewcommand{\cvLocationMarker}{\faMapMarker*}
 
-\name{John Doe}
-\jobtitle{Software Engineer}
-
 \begin{document}
 %% ChkTeX will complain about wrong length of dashes. You can ignore it. or use {-} instead of -.
 %% https://tex.stackexchange.com/a/687676
 
-% Personal Information
-\name{Your Name Here}
-\jobtitle{Your Position or Tagline Here}
-\email{your_name@email.com}
-\phone{000--00--0000}
-% These are optional and you can remove them
-\homepage{www.homepage.com}
-\linkedin{your_id}
-\github{your_id}
-\medium{@medium_handle}
-\twitter{xhandle}
-%% Or you can declare your own field with
-%% \NewInfoFiled{fieldname}{symbol}[optional hyperlink prefix] and use it:
-% \NewInfoField{gitlab}{\faGitlab}[https://gitlab.com/]
-% \gitlab{your_id}
-
 %% You can add multiple photos on the left or right
-\photo{2.8cm}{Globe_High}
+\begin{resumeheader}
+    \profilephoto{Globe_High}{2.8cm}
 
-\makecvheader
+    \name{John Doe}
+    \jobtitle{Software Engineer}
+
+    % Personal Information
+    \name{Your Name Here}
+    \jobtitle{Your Position or Tagline Here}
+    \email{your_name@email.com}
+    \phone{000--00--0000}
+    % These are optional and you can remove them
+    \homepage{www.homepage.com}
+    \linkedin{your_id}
+    \github{your_id}
+    \medium{@medium_handle}
+    \twitter{xhandle}
+    %% Or you can declare your own field with
+    %% \NewInfoFiled{fieldname}{symbol}[optional hyperlink prefix] and use it:
+    % \NewInfoField{gitlab}{\faGitlab}[https://gitlab.com/]
+    % \gitlab{your_id}
+\end{resumeheader}
+
+\begin{nextsection}{Career Objective}[\nextSVGIcon{email}]
+    \large Hi
+\end{nextsection}
 
 %% Depending on your tastes, you may want to make fonts of itemize environments slightly smaller
 % \AtBeginEnvironment{itemize}{\small}

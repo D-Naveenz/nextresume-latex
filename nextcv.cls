@@ -161,14 +161,14 @@ next_personal_info = TokenGrid:new("\\resume@hidefieldnamesvalue", "\\resume@wit
 }
 
 % Main command to print the personal info fields in a table
-\NewDocumentCommand{\PrintInfoGrid}{ O{3} }{
+\NewDocumentCommand{\resume@info@printfields}{ O{3} }{%
   \directlua{
     next_personal_info:build_grid(#1)
   }
 }
 
 % Utility command to clear all fields
-\NewDocumentCommand{\ClearInfoGrid}{}
+\NewDocumentCommand{\resume@info@clear}{}
 {
   \directlua{
     next_personal_info:clear_fields()
@@ -178,11 +178,6 @@ next_personal_info = TokenGrid:new("\\resume@hidefieldnamesvalue", "\\resume@wit
 %% v1.1.0 declare name variables with default values
 \def\@name{}
 \def\@jobtitle{}
-\def\@email{}
-\def\@phone{}
-
-\newcommand{\name}[1]{\def\@name{#1}}
-\newcommand{\jobtitle}[1]{\def\@jobtitle{#1}}
 
 %% Define field names for accessibility
 \newcommand{\datename}{Date}
@@ -190,10 +185,90 @@ next_personal_info = TokenGrid:new("\\resume@hidefieldnamesvalue", "\\resume@wit
 \newcommand{\rolename}{Role}
 \newcommand{\projectlink}{Project Link}
 
-% Define info field commands at begin document to ensure all packages are loaded
-\AtBeginDocument{%
-  % Define the actual field commands after fontawesome is loaded
-  % Use simple ASCII symbols - FontAwesome icons have Lua escaping issues
+% Set PDF metadata using hyperref and hyperxmp
+% Parameters: <author name> <job title>
+\newcommand{\resume@SetMetadata}[2]{%
+  % Set up hyperref configuration (combining color setup with metadata)  
+  \bool_if:NTF \g_withhyper_bool {
+    % Set XMP metadata using hyperxmp with link colors
+    \hypersetup{
+      linkcolor=link, 
+      urlcolor=link,
+      pdfauthor={#1},
+      pdftitle={#2},
+      pdfsubject={Resume~of~#1},
+      pdfkeywords={Resume,~CV,~#2,~#1}
+    }
+  }{
+    % Set XMP metadata using hyperxmp only
+    \hypersetup{
+      pdfauthor={#1},
+      pdftitle={#2},
+      pdfsubject={Resume~of~#1},
+      pdfkeywords={Resume,~CV,~#2,~#1}
+    }
+  }
+}
+
+\ExplSyntaxOff
+
+%% utils
+\newenvironment{fullwidth}{%
+  \begin{adjustwidth}{}{\dimexpr-\marginparwidth-\marginparsep\relax}
+}{%
+  \end{adjustwidth}
+}
+
+\newcommand{\cvsectionfont}{\LARGE\bfseries}
+\newcommand{\cvsubsectionfont}{\large\bfseries}
+
+\NewDocumentEnvironment{nextsection}{m O{}}{%
+  \par\vspace{1.5\baselineskip}\noindent % Add vertical space
+  % Add the section title in a table to align with the icon if provided
+  \IfValueTF{#2}{%
+    \begin{tblr}{stretch = 0, colspec = {Q[h,l]l}, colsep=0.4em}%
+      #2 & \nextHeadingStyle{\MakeUppercase{#1}}\\
+    \end{tblr}%
+  }{%
+    \nextHeadingStyle{\MakeUppercase{#1}}
+  }%
+  % Add a horizontal rule rest of the line
+  \hspace{2ex}{\color{headingrule}\hrulefill}
+  \par\vspace{0.5\baselineskip} % Add some space after the section heading
+}{%
+  \par
+}%
+
+\newenvironment{resumeheader}{%
+  % Support for multiple photos
+  \newlength{\resume@profilephoto@width}
+  \newlength{\resume@profilephoto@hspace}
+  \def\resume@profilephoto{}
+
+  % Helper command for making a photo in resumeheader
+  \newcommand{\resume@makeaphoto}[2]{%
+    \begin{minipage}[c]{##1}%
+      \begin{tikzpicture}%
+        \clip (0,0) circle (0.5\linewidth); % Clip using half of #1 (radius)
+        \node at (0,0) {\includegraphics[width=\linewidth]{##2}}; % Set image width to #1
+        \draw[line width=3pt, color=accent] (0,0) circle (0.47\linewidth); % Inner border
+        \draw[line width=2pt, color=headingrule] (0,0) circle (0.49\linewidth); % Outer border
+      \end{tikzpicture}%
+    \end{minipage}%
+  }
+
+  % Photo command for use within resumeheader environment
+  \NewDocumentCommand{\profilephoto}{m m O{1cm}}{%
+    \setlength{\resume@profilephoto@hspace}{##3}%
+    \setlength{\resume@profilephoto@width}{##2}%
+    \def\resume@profilephoto{\resume@makeaphoto{\resume@profilephoto@width}{##1}}%
+  }
+
+  % Personal Information
+  \newcommand{\name}[1]{\def\@name{##1}}
+  \newcommand{\jobtitle}[1]{\def\@jobtitle{##1}}
+
+  % Define profile info fields
   \NewInfoField{email}{\nextSVGIcon{email}}[mailto:]%
   \NewInfoField{mailaddress}{\nextSVGIcon{mail}}%
   \NewInfoField{phone}{\nextSVGIcon{call}}[tel:]%
@@ -203,88 +278,22 @@ next_personal_info = TokenGrid:new("\\resume@hidefieldnamesvalue", "\\resume@wit
   \NewInfoField{github}{\nextSVGIcon{github}}[https://github.com/]%
   \NewInfoField{medium}{\nextSVGIcon{medium}}[https://medium.com/]%
 
-  % Set up hyperref configuration (combining color setup with metadata)  
-  \bool_if:NTF \g_withhyper_bool {
-    % Set XMP metadata using hyperxmp with link colors
-    \hypersetup{
-      linkcolor=link, 
-      urlcolor=link,
-      pdfauthor={\@name},
-      pdftitle={\@jobtitle},
-      pdfsubject={Resume~of~\@name},
-      pdfkeywords={Resume,~CV,~\@jobtitle,~\@name}
-    }
-  }{
-    % Set XMP metadata using hyperxmp only
-    \hypersetup{
-      pdfauthor={\@name},
-      pdftitle={\@jobtitle},
-      pdfsubject={Resume~of~\@name},
-      pdfkeywords={Resume,~CV,~\@jobtitle,~\@name}
-    }
-  }
-  
-  % Define the print fields command
-  \newcommand{\resume@info@printfields}[1]{\PrintInfoGrid[#1]}
-}
+  % Hyperref configuration is set in AtBeginDocument hook
+  \resume@SetMetadata{\@name}{\@jobtitle}
 
-\ExplSyntaxOff
-
-%% utils
-\newcommand{\divider}{\textcolor{body!30}{\hdashrule{\linewidth}{0.6pt}{0.5ex}}\medskip}
-
-\newenvironment{fullwidth}{%
-  \begin{adjustwidth}{}{\dimexpr-\marginparwidth-\marginparsep\relax}}
-    {\end{adjustwidth}}
-
-\newcommand{\cvsectionspace}{\vspace{20pt}}
-
-% Support for multiple photos
-\newlength{\cv@profilephoto@width}
-\newlength{\cv@profilephoto@hspace}
-\def\cv@profilephoto{}
-\setlength{\cv@profilephoto@hspace}{1cm}
-
-\newcommand{\@makeaphoto}[2]{%
-  \begin{minipage}[c]{#1}
-    \begin{tikzpicture}
-      \clip (0,0) circle (0.5\linewidth); % Clip using half of #1 (radius)
-      \node at (0,0) {\includegraphics[width=\linewidth]{#2}}; % Set image width to #1
-      \draw[line width=3pt, color=accent] (0,0) circle (0.47\linewidth); % Inner border
-      \draw[line width=2pt, color=headingrule] (0,0) circle (0.49\linewidth); % Outer border
-    \end{tikzpicture}
-  \end{minipage}
-}
-
-\newcommand{\photo}[2]{%
-  \setlength{\cv@profilephoto@width}{#1}
-  \def\cv@profilephoto{\@makeaphoto{\cv@profilephoto@width}{#2}}
-}
-
-\newcommand{\cvsectionfont}{\LARGE\bfseries}
-\newcommand{\cvsubsectionfont}{\large\bfseries}
-
-\newcommand{\makecvheader}{%
   \begingroup
-  \cv@profilephoto\hfill%
-  \begin{minipage}{\dimexpr\linewidth-\cv@profilephoto@width-\cv@profilephoto@hspace\relax}%
+}{%
+  \resume@profilephoto\hfill%
+  \begin{minipage}{\dimexpr\linewidth-\resume@profilephoto@width-\resume@profilephoto@hspace\relax}%
     \raggedright%
     {\nextNameStyle{\@name}\par}
     \medskip
     {\nextTaglineStyle{\@jobtitle}\par}
     \medskip
-    {\nextPersonalInfoStyle{\resume@info@printfields{4}}\par}
+    {\nextPersonalInfoStyle{\resume@info@printfields[4]}\par}
   \end{minipage}\par
   \vspace{12pt}
-  \divider%
-  \endgroup\smallskip%
-}
-
-\newcommand{\cvsection}[2][]{%
-\nointerlineskip\bigskip%
-\ifstrequal{#1}{}{}{\marginpar{\vspace*{\dimexpr1pt-\baselineskip}\raggedright\input{#1}}}%
-{\colorbox{headingrule}{\color{heading}\cvsectionfont\MakeUppercase{#2}}}\\[-1.7ex]%
-{\color{headingrule}\rule{\linewidth}{2pt}\par}\medskip
+  \endgroup
 }
 
 \newcommand{\cvsubsection}[1]{%
