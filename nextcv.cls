@@ -394,15 +394,16 @@
   \end{nextsection}%
 }%
 
-% Page-breakable timeline implementation
+% Modern dynamic timeline implementation
 % Counter for timeline events
 \newcounter{timelineevent}
 
-% Timeline environment that supports page breaks
+% Timeline environment with dynamic width calculation
 \newenvironment{nexttimeline}{%
     \setcounter{timelineevent}{0}
+    \def\lastbottom{0}% Initialize bottom position tracker
     
-    % Calculate dynamic widths based on available space (same as before)
+    % Calculate dynamic widths based on available space
     \pgfmathsetmacro{\datewidth}{2.3}% Date column width in cm
     \pgfmathsetmacro{\timelinegap}{0.5}% Gap from center to date (left side)
     \pgfmathsetmacro{\eventgap}{1}% Gap from center to event (right side)  
@@ -411,51 +412,29 @@
     \pgfmathsetmacro{\safemargin}{0.2}% Safety margin to prevent overfull boxes
     
     % Calculate available width for event box
+    % Total available = \linewidth - date width - gaps - timeline thickness - padding - safety margin
     \pgfmathsetmacro{\availablewidth}{\linewidth/1cm - \datewidth - \timelinegap - \eventgap - \timelinethickness - 2*\eventpadding - \safemargin}
     \pgfmathsetmacro{\eventtextwidth}{\availablewidth - 0.4}% Subtract for borders
     
-    % Store the timeline parameters globally for use in timeline events
-    \xdef\timeline@datewidth{\datewidth}
-    \xdef\timeline@timelinegap{\timelinegap}
-    \xdef\timeline@eventgap{\eventgap}
-    \xdef\timeline@availablewidth{\availablewidth}
-    \xdef\timeline@eventtextwidth{\eventtextwidth}
-    \xdef\timeline@eventpadding{\eventpadding}
-    
-    % Initialize first event flag
-    \global\let\timeline@isfirst\@empty
-}{%
-    % No closing tikzpicture needed since each event is independent
-}
-
-% Command to add timeline events (each event is now a separate tikzpicture)
-\newcommand{\nexttimelineevent}[2]{%
-    \stepcounter{timelineevent}%
-    
-    % Add spacing before each event (except the first)
-    \ifx\timeline@isfirst\@empty
-        \global\def\timeline@isfirst{done}% Mark that we've seen the first event
-    \else
-        \vspace{0.5em}% Space between events
-    \fi
-    
-    % Create individual tikzpicture for this event (allows page breaks between events)
-    \noindent\begin{tikzpicture}[
-        overlay,
-        remember picture,
+    % Declare layers before starting tikzpicture
+    \pgfdeclarelayer{background}% For timeline
+    \pgfdeclarelayer{circles}% For both big and small circles
+    \pgfsetlayers{background,circles,main}%
+    \begin{tikzpicture}[
+        % These styles apply to ALL elements in this tikzpicture
         event/.style={
             rectangle, 
             draw=accent!60, 
             fill=body!5, 
             thick,
-            minimum width=\timeline@availablewidth cm,
-            text width=\timeline@eventtextwidth cm,
+            minimum width=\availablewidth cm,
+            text width=\eventtextwidth cm,
             align=left,
             rounded corners=4pt,
-            inner sep=\timeline@eventpadding cm
+            inner sep=\eventpadding cm
         },
         date/.style={
-            text width=\timeline@datewidth cm,
+            text width=\datewidth cm,
             align=right,
             anchor=east,
             font=\small\bfseries\color{accent}
@@ -480,26 +459,63 @@
             inner sep=0pt
         }
     ]
-        % Reference point for this event
-        \coordinate (eventref) at (0,0);
-        
-        % Date/location node (left side)
-        \node[date, anchor=east] (datebox) at (-\timeline@timelinegap, 0) {#1};
-        
-        % Content node (right side)
-        \node[event, anchor=west] (eventbox) at (\timeline@eventgap, 0) {#2};
-        
-        % Timeline segment - draw a line that extends above and below this event
-        \draw[timeline] (0, 1em) -- (0, -1em);
-        
-        % Timeline circles
-        \node[bigcircle] at (0, 0) {};
-        \node[dot] at (0, 0) {};
-        
-    \end{tikzpicture}%
+    % Initialize timeline bounds tracking
+    \def\timelinetop{0.8}% Start above first event (using eventspacing value)
+    \def\timelinebottom{-0.8}% Will be updated as events are added
+}{
+    % Draw everything at the end
+    \ifnum\thetimelineevent>0%
+        % LAYER 1: Draw timeline on background layer (behind everything)
+        \begin{pgfonlayer}{background}
+            \draw[timeline] (0,\timelinetop) -- (0,\timelinebottom);
+        \end{pgfonlayer}
+    \fi
+    \end{tikzpicture}
+}
+
+% Command to add timeline events
+\newcommand{\nexttimelineevent}[2]{%
+    \stepcounter{timelineevent}%
+    % Calculate position based on previous event's bottom plus spacing
+    \pgfmathsetmacro{\eventspacing}{0.8}% Spacing between events in cm
     
-    % Reserve space for the content (make sure the content doesn't overlap)
-    \vspace{\dimexpr\baselineskip+0.5em\relax}% Adjust this based on your content
+    % For first event, use initial position; for subsequent events, use last bottom minus spacing
+    \ifnum\thetimelineevent=1%
+        \pgfmathsetmacro{\ypos}{0}%
+    \else%
+        \pgfmathsetmacro{\ypos}{\lastbottom - \eventspacing}%
+    \fi
+    
+    \coordinate (pos\thetimelineevent) at (0,\ypos);
+    
+    % Date/location node (left side) - use calculated gap
+    \node[date, anchor=north east] (date\thetimelineevent) at ($(pos\thetimelineevent) + (-\timelinegap,0)$) {#1};
+    
+    % Content node (right side) - use calculated gap
+    \node[event, anchor=north west] (event\thetimelineevent) at ($(pos\thetimelineevent) + (\eventgap,0)$) {#2};
+    
+    % Draw circles on the circles layer
+    \begin{pgfonlayer}{circles}
+        % Big circle with white fill covers the timeline
+        \node[bigcircle] at (0, 0 |- date\thetimelineevent.center) {};
+        % Small dot on top of big circle
+        \node[dot] at (0, 0 |- date\thetimelineevent.center) {};
+    \end{pgfonlayer}
+    
+    % Update the bottom position for next event
+    % Use the minimum of date and event bottom positions (most negative y-coordinate)
+    \coordinate (temp1) at (date\thetimelineevent.south);
+    \coordinate (temp2) at (event\thetimelineevent.south);
+    \pgfpointanchor{temp1}{center}
+    \pgfgetlastxy{\tempx}{\datebottom}
+    \pgfpointanchor{temp2}{center} 
+    \pgfgetlastxy{\tempx}{\eventbottom}
+    \pgfmathsetmacro{\tempbottom}{min(\datebottom/1cm,\eventbottom/1cm)}
+    \xdef\lastbottom{\tempbottom}
+    
+    % Update timeline bottom to extend below the last event
+    \pgfmathsetmacro{\newtimelinebottom}{\tempbottom - \eventspacing}
+    \xdef\timelinebottom{\newtimelinebottom}
 }
 
 \newcommand{\cvsubsection}[1]{%
