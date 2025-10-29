@@ -399,11 +399,10 @@
   \end{nextsection}%
 }%
 
-% Modern dynamic timeline implementation
 % Counter for timeline events
 \newcounter{timelineevent}
 
-% Timeline environment with dynamic width calculation
+% Modern dynamic timeline implementation
 \newenvironment{nexttimeline}{%
   \setcounter{timelineevent}{0}
   \def\lastbottom{0}% Initialize bottom position tracker
@@ -499,11 +498,9 @@
     
     % Update the bottom position for next event
     % Use the minimum of date and event bottom positions (most negative y-coordinate)
-    \coordinate (temp1) at (date\thetimelineevent.south);
-    \coordinate (temp2) at (event\thetimelineevent.south);
-    \pgfpointanchor{temp1}{center}
+    \pgfpointanchor{date\thetimelineevent}{south}
     \pgfgetlastxy{\tempx}{\datebottom}
-    \pgfpointanchor{temp2}{center} 
+    \pgfpointanchor{event\thetimelineevent}{south}
     \pgfgetlastxy{\tempx}{\eventbottom}
     \pgfmathsetmacro{\tempbottom}{min(\datebottom/1cm,\eventbottom/1cm)}
     \xdef\lastbottom{\tempbottom}
