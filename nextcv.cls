@@ -147,7 +147,6 @@
 % All markers are processed at document start for maximum efficiency
 \AtBeginDocument{%
   % SVG-based markers
-  \def\nextRatingMarker{\nextSVGIcon{circle}}%
   \def\nextProjectLinkMarker{\nextSVGIcon{github}[1em]}%
   \def\nextProjectRoleMarker{\nextSVGIcon{github}[1em]}%
 
@@ -188,7 +187,6 @@
 \begin{luacode*}
   -- Load LUA libraries
   TokenGrid = require("next_tokengrid")
-  RatingBox = require("next_ratingbox")
 
   -- Create a new TokenGrid instance for personal info
   next_personal_info = TokenGrid:new("\\resume@hidefieldnamesvalue", "\\resume@withhypervalue")
@@ -350,20 +348,58 @@
 % Resume Skills Environment. Use \columnbreak to break columns manually.
 % Parameters: [number of columns (default 1)]
 \NewDocumentEnvironment{nextskills}{ O{1} }{%
-  \directlua{rating_box = RatingBox:new("accent", "body!30", 5)}%
+  % Parameters: #1 = rating value (0-5, supports 0.5 increments)
+  \NewDocumentCommand{\nextRatingBox}{m}{%
+    \BeginAccSupp{method=plain,ActualText={##1}}%
+    \begin{tikzpicture}[baseline=-0.5em]
+      % Calculate positions using pgfmath like in nexttimeline
+      \pgfmathsetmacro{\circlespacing}{0.8}  % Spacing between circles
+      \pgfmathsetmacro{\circleradius}{0.2}   % Circle radius (smaller for better fit)
+      \pgfmathsetmacro{\ratingvalue}{##1}     % Store rating value
+      
+      % Loop through 5 circles
+      \foreach \i in {1,2,3,4,5} {
+        \coordinate (circle\i) at ({(\i-1)*\circlespacing},0);
+        
+        % Check if this circle should be half-filled
+        \pgfmathsetmacro{\halfcheck}{abs(\ratingvalue - (\i - 0.5))}
+        \ifdim\halfcheck pt<0.01pt
+          % Half-filled circle - use clipping method instead of arcs
+          \begin{scope}
+            \clip (circle\i) ++(-\circleradius,-\circleradius) rectangle ++(\circleradius,2*\circleradius);
+            \fill[accent] (circle\i) circle (\circleradius);
+          \end{scope}
+          \begin{scope}
+            \clip (circle\i) ++(0,-\circleradius) rectangle ++(\circleradius,2*\circleradius);
+            \fill[body!30] (circle\i) circle (\circleradius);
+          \end{scope}
+        \else
+          % Full or empty circle
+          \pgfmathsetmacro{\fillcheck}{\i > \ratingvalue ? 1 : 0}
+          \ifdim\fillcheck pt>0.5pt
+            \fill[body!30] (circle\i) circle (\circleradius);
+          \else
+            \fill[accent] (circle\i) circle (\circleradius);
+          \fi
+        \fi
+      }
+
+      % DEBUG: Draw bounding box (comment out when not debugging)
+      % \draw[red, thick] (current bounding box.south west) rectangle (current bounding box.north east);
+      % \fill[red] (current bounding box.south west) circle (1pt) node[below left, font=\tiny] {SW};
+      % \fill[red] (current bounding box.north east) circle (1pt) node[above right, font=\tiny] {NE};
+    \end{tikzpicture}%
+    \EndAccSupp{}%
+  }
 
   % Add a skill with weighted rating
   % Use accsupp so that the actual numeric value is copied/pasted and also support 0.5, 1.5, 2.5, 3.5, 4.5
   % Parameters: <skill name> <rating out of 5>
   \newcommand{\weightedskill}[2]{%
     \def\skillname{\color{emphasis}##1}%
-    \def\rating{%
-      \directlua{tex.sprint(rating_box:render_rating(##2))}%
-    }%
-    \noindent%
-    \begin{tblr}{width=\dimexpr\columnwidth-2em\relax, colspec={ l X[l] Q[h,r] }, colsep=0pt}%
-      \skillname & & \rating \\
-    \end{tblr}%
+    \def\rating{\nextRatingBox{##2}}%
+
+    \noindent\skillname\hfill\rating%
     \par\vspace{1ex}%
   }
 
@@ -403,7 +439,7 @@
   % Calculate dynamic widths based on available space
   \pgfmathsetmacro{\datewidth}{2.3}% Date column width in cm
   \pgfmathsetmacro{\timelinegap}{0.5}% Gap from center to date (left side)
-  \pgfmathsetmacro{\eventgap}{1}% Gap from center to event (right side)  
+  \pgfmathsetmacro{\eventgap}{0.8}% Gap from center to event (right side)  
   \pgfmathsetmacro{\timelinethickness}{0.1}% Timeline thickness in cm
   \pgfmathsetmacro{\eventpadding}{0.3}% Internal padding for event box
   \pgfmathsetmacro{\safemargin}{0.2}% Safety margin to prevent overfull boxes
@@ -439,12 +475,12 @@
     timeline/.style={
       draw=accent!80, 
       thick, 
-      line width=2pt
+      line width=1.2pt
     },
     dot/.style={
       circle,
       fill=accent,
-      minimum size=8pt,
+      minimum size=7pt,
       inner sep=0pt
     },
     bigcircle/.style={
@@ -452,13 +488,13 @@
       draw=accent,
       fill=white,
       thick,
-      minimum size=15pt,
+      minimum size=13pt,
       inner sep=0pt
     }
   ]
   % Initialize timeline bounds tracking
-  \def\timelinetop{0.8}% Start above first event (using eventspacing value)
-  \def\timelinebottom{-0.8}% Will be updated as events are added
+  \def\timelinetop{0.6}% Start above first event (using eventspacing value)
+  \def\timelinebottom{-0.4}% Will be updated as events are added
 
   % Command to add timeline events
   \newcommand{\nexttimelineevent}[2]{%
@@ -479,7 +515,7 @@
     \node[date, anchor=north east] (date\thetimelineevent) at ($(pos\thetimelineevent) + (-\timelinegap,0)$) {##1};
     
     % Content node (right side) - use calculated gap
-    \node[event, anchor=north west] (event\thetimelineevent) at ($(pos\thetimelineevent) + (\eventgap,0)$) {##2};
+    \node[event, anchor=north west] (event\thetimelineevent) at ($(pos\thetimelineevent) + (\eventgap,0) + (0,0.2cm)$) {##2};
     
     % Draw circles on the circles layer
     \begin{pgfonlayer}{circles}
