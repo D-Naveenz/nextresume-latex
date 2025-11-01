@@ -499,7 +499,7 @@
   \def\timelinebottom{-0.4}% Will be updated as events are added
 
   % Command to add timeline events
-  \newcommand{\nexttimelineevent}[2]{%
+  \renewcommand{\nexttimelineevent}[2]{%
     \stepcounter{timelineevent}%
     % Calculate position based on previous event's bottom plus spacing
     \pgfmathsetmacro{\eventspacing}{0.8}% Spacing between events in cm
@@ -553,37 +553,48 @@
 
 % Starred version: Simple table-based timeline without graphics
 \newenvironment{nexttimeline*}{%
+  % Create proper scoping for command redefinition
+  \begingroup
   \setcounter{timelineevent}{0}
   
-  % Calculate column widths to match the TikZ version alignment
-  \pgfmathsetmacro{\datecolwidth}{2.3}% Date column width in cm (same as TikZ version)
-  \pgfmathsetmacro{\eventcolwidth}{\linewidth/1cm - \datecolwidth - 0.5}% Remaining width for event column
+  % Calculate dynamic widths to match nexttimeline environment
+  % Use conditional definitions to avoid redefinition errors
+  \@ifundefined{staradatewidth}{\newlength{\staradatewidth}}{}
+  \@ifundefined{startimelinegap}{\newlength{\startimelinegap}}{}
+  \@ifundefined{stareventgap}{\newlength{\stareventgap}}{}
   
-  % Start the tabularray table
-  \begin{tblr}{
-    colspec = {X[\datecolwidth,r,m] X[\eventcolwidth,l,m]}, % Right-aligned dates, left-aligned events
-    rowsep = 0.8cm, % Vertical spacing between rows (matches eventspacing from TikZ version)
-    colsep = 1.3cm,  % Horizontal gap between columns (matches timelinegap + eventgap)
-    stretch = 0,     % Don't stretch the table
-    hlines = {},     % No horizontal lines
-    vlines = {}      % No vertical lines
-  }
+  \setlength{\staradatewidth}{3cm}      % Date column width (matches TikZ version)
+  \setlength{\startimelinegap}{0.8em}    % Left margin (aligns with non-star)
+  \setlength{\stareventgap}{1.5cm}       % Space between columns (matches timelinegap + eventgap from TikZ)
   
-  % Command to add timeline events (simplified for table format)
-  \newcommand{\nexttimelineevent}[2]{%
+  % Calculate content width: total width - left gap - date width - column gap
+  \@ifundefined{starcontentwidth}{\newlength{\starcontentwidth}}{}
+  \setlength{\starcontentwidth}{\dimexpr\linewidth-\staradatewidth-\stareventgap-0.5em\relax}
+
+  % Create a local tabular-specific definition
+  \renewcommand{\nexttimelineevent}[2]{%
     \stepcounter{timelineevent}%
-    % Add row separator if not the first event
     \ifnum\thetimelineevent>1 \\ \fi
-    % Date/location cell (right-aligned) & Content cell (left-aligned)
     {\color{emphasis}##1} & {##2}%
+  }%
+  
+  % Start the tabular table with precise alignment
+  \renewcommand{\arraystretch}{1.5}%
+  \begin{tabular}[t]{
+    @{}     % Fixed left space
+    >{\raggedleft\arraybackslash}p{\staradatewidth}  % Right-aligned date column
+    @{\hspace{\stareventgap}}        % Fixed space between columns  
+    p{\starcontentwidth}             % Left-aligned content column
+    @{}                          % No right padding
   }
 }{
-  \end{tblr}
+  \end{tabular}%
+  \endgroup
 }
 
 \newcommand{\nextItemHeading}[1]{{\large\bfseries\color{heading}#1}\par}%
 \newcommand{\nextItemSubheading}[1]{{\normalsize\bfseries\color{subheading}#1}\par}%
-\newcommand{\nextTechstack}[1]{{\bfseries\color{emphasis}Tech Stack:~#1}\par}%
+\newcommand{\nextTechstack}[1]{{\bfseries\color{emphasis}Technologies:~#1}\par}%
 
 % Project Reference Command
 % Parameters: 
@@ -633,6 +644,19 @@
   \tl_if_empty:NF \l_timelineevent_location_tl {\\{\tl_use:N \l_timelineevent_location_tl}}%
 }
 \ExplSyntaxOff
+
+%% ============================================================================
+%% Timeline Event Command - Provide Default Definition
+%% ============================================================================
+% Default placeholder command - will be redefined by timeline environments
+\newcommand{\nexttimelineevent}[2]{%
+  \PackageError{nextcv}{%
+    \string\nexttimelineevent\space used outside of timeline environment%
+  }{%
+    The \string\nexttimelineevent\space command can only be used within %
+    nexttimeline or nexttimeline* environments.%
+  }%
+}
 
 %% ============================================================================
 %% Additional Utility Commands
