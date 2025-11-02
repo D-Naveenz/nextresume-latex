@@ -1,6 +1,5 @@
 %%%%%%%%%%%%%%%%%
-%% NextCV - v1.1.0 - Naveen Dharmathunga (dasheenaveen@outlook.com)
-%% This is an upgraded version of altacv.cls (v1.7.1) written by LianTze Lim.
+%% NextResume - v2.0.0 - Naveen Dharmathunga (dasheenaveen@outlook.com)
 %% ================================================================================
 %% It may be distributed and/or modified under the
 %% conditions of the LaTeX Project Public License, either version 1.3
@@ -9,12 +8,12 @@
 %% and version 1.3 or later is part of all distributions of LaTeX
 %% version 2003/12/01 or later.
 %% ================================================================================
-%% Additionally, this derived work is licensed under the MIT License.
+%% Additionally, this work is licensed under the MIT License.
 %% See LICENSE file in the root directory for more information.
 %%%%%%%%%%%%%%%%
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{nextcv}[2024/07/29 NextCV v1.1.0, The template class for a next generation resume/curriculum vitae.]
+\ProvidesClass{nextresume}[2025/11/03 NextResume v2.0.0, The template class for a next generation resume/curriculum vitae.]
 
 \ExplSyntaxOn
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
