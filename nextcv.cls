@@ -48,7 +48,7 @@
 \RequirePackage{fontspec}
 
 %% 3. GEOMETRY AND PAGE LAYOUT (Before hyperref)
-\RequirePackage[a4paper, margin=1.5cm]{geometry}
+\RequirePackage[margin=1.5cm]{geometry}
 
 %% 4. HYPERREF AND METADATA (Must be loaded early, but after geometry)
 % Set hyperref options before loading the package to avoid duplicate option warnings
@@ -157,13 +157,16 @@
 % Define styles for markers
 \newcommand{\nextItemMarker}{{\small\textbullet}}
 
-% Define all marker symbols once to avoid repeated processing
-% All markers are processed at document start for maximum efficiency
-\AtBeginDocument{%
-  % SVG-based markers
-  \def\nextProjectLinkMarker{\nextSVGIcon{github}[1em]}%
-  \def\nextProjectRoleMarker{\nextSVGIcon{github}[1em]}%
-}
+% SVG-based markers
+\def\nextProfileMarker{\nextSVGIcon{person}[1.5em]}%
+\def\nextSkillMarker{\nextSVGIcon{settings}[1.5em]}%
+\def\nextExperienceMarker{\nextSVGIcon{briefcase}[1.5em]}%
+\def\nextProjectsMarker{\nextSVGIcon{code}[1.5em]}%
+\def\nextEducationMarker{\nextSVGIcon{college}[1.5em]}%
+\def\nextVolunteeringMarker{\nextSVGIcon{heart}[1.5em]}%
+\def\nextCertificatesMarker{\nextSVGIcon{tick}[1.5em]}%
+\def\nextStrengthsMarker{\nextSVGIcon{star}[1.5em]}%
+\def\nextProjectLinkMarker{\nextSVGIcon{github}[1em]}%
 
 %% ============= Personal Info Data Structure (Lua Implementation) =============
 
@@ -183,35 +186,27 @@
 \NewDocumentCommand{\NewInfoField}{s m m o}{%
   \IfBooleanTF{#1}
     {% Starred version: full URL mode
-     \directlua{
-       next_personal_info:create_info_field("#2", "\luaescapestring{\unexpanded{#3}}", "fullurl")
-     }%
-    }
-    {% Unstarred version: prefix mode
-     \IfValueTF{#4}
-       {% With hyperlink prefix
+      \directlua{next_personal_info:create_info_field("#2", "\luaescapestring{\unexpanded{#3}}", "fullurl")}%
+    }{% Unstarred version: prefix mode
+      \IfValueTF{#4}{% With hyperlink prefix
         \directlua{
           next_personal_info:create_info_field("#2", "\luaescapestring{\unexpanded{#3}}", "prefix", "\detokenize{#4}")
         }%
-       }
-       {% Without hyperlink prefix  
+      }{% Without hyperlink prefix  
         \directlua{
           next_personal_info:create_info_field("#2", "\luaescapestring{\unexpanded{#3}}", "noprefix")
         }%
-       }%
+      }%
     }%
 }
 
 % Main command to print the personal info fields in a table
 \newcommand{\resume@info@printfields}[1]{%
-  \directlua{
-    next_personal_info:build_grid(#1)
-  }
+  \directlua{next_personal_info:build_grid(#1)}
 }
 
 % Utility command to clear all fields
-\newcommand{\resume@info@clear}
-{
+\newcommand{\resume@info@clear}{%
   \directlua{
     next_personal_info:clear_fields()
   }
@@ -247,6 +242,10 @@
 }
 
 \ExplSyntaxOff
+
+%% ============================================================================
+%% Header Environment
+%% ============================================================================
 
 % Resume Header Environment
 \NewDocumentEnvironment{resumeheader}{ O{3} }{%
@@ -326,6 +325,10 @@
   \par
 }%
 
+%% ============================================================================
+%% Skills Environment
+%% ============================================================================
+
 % Resume Skills Environment. Use \columnbreak to break columns manually.
 % Parameters: [number of columns (default 1)]
 \NewDocumentEnvironment{nextskills}{ O{1} }{%
@@ -401,7 +404,7 @@
     \vspace{6pt}%
   }%
 
-  \begin{nextsection}{Skills}[\nextSVGIcon{email}]%
+  \begin{nextsection}{Skills}[\nextSkillMarker]%
     \begin{multicols}{#1}%
 }{%
     \end{multicols}%
@@ -411,6 +414,15 @@
 %% ============================================================================
 %% Timeline Environment
 %% ============================================================================
+% Default placeholder command - will be redefined by timeline environments
+\newcommand{\nexttimelineevent}[2]{%
+  \PackageError{nextcv}{%
+    \string\nexttimelineevent\space used outside of timeline environment%
+  }{%
+    The \string\nexttimelineevent\space command can only be used within %
+    nexttimeline or nexttimeline* environments.%
+  }%
+}
 
 % Counter for timeline events
 \newcounter{timelineevent}
@@ -532,6 +544,7 @@
 \newenvironment{nexttimeline*}{%
   % Create proper scoping for command redefinition
   \begingroup
+  \vspace{-0.8em} % Cancels out that extra space added by tabular
   % Calculate dynamic widths to match nexttimeline environment
   % Use conditional definitions to avoid redefinition errors
   \@ifundefined{staradatewidth}{\newlength{\staradatewidth}}{}
@@ -546,6 +559,7 @@
 
   % Each nexttimelineevent creates its own complete table
   \renewcommand{\nexttimelineevent}[2]{%
+    \noindent
     \begin{tabular}[t]{
       @{}                                              % No left padding
       >{\raggedleft\arraybackslash}p{\staradatewidth}  % Right-aligned date column
@@ -555,20 +569,23 @@
     }
     {\color{emphasis}##1} & {##2} \\
     \end{tabular}%
-    \vspace{1em}%
+    \par\vspace{1em}%
   }%
 }{
   \vspace{-1em}% Remove the last vspace from the final timeline event
   \endgroup%
 }
 
+%% ============================================================================
+%% Certificates Environment
+%% ============================================================================
 
 \newenvironment{nextcertificates}{
   \newcommand{\nextCertificate}[3]{%
     \item \bfseries\textcolor{emphasis}{##1 | ##2} \\ \small{\href{##3}{##3}}
   }%
 
-  \begin{nextsection}{Certificates}[\nextSVGIcon{email}]%
+  \begin{nextsection}{Certificates}[\nextCertificatesMarker]%
     \begin{itemize}
 }{%
     \end{itemize}%
@@ -579,6 +596,10 @@
 \newcommand{\nextItemSubheading}[1]{{\normalsize\bfseries\color{subheading}#1}\par}%
 \newcommand{\nextTechstack}[1]{{\bfseries\color{emphasis}Technologies:~#1}\par}%
 
+%% ============================================================================
+%% Utility Commands
+%% ============================================================================
+
 % Project Reference Command
 % Parameters: 
 % - {string} #1 - Repository URL
@@ -587,7 +608,7 @@
   \def\reponame{\directlua{tex.sprint(Utils.get_repository_name(#1))}}%
   {
     \normalfont
-    \textbf{Repository:}~{\BeginAccSupp{method=pdfstringdef,ActualText={\rolename:}}\nextProjectRoleMarker\EndAccSupp{}\reponame}%
+    \textbf{Repository:}~{\BeginAccSupp{method=pdfstringdef,ActualText={\rolename:}}\nextProjectLinkMarker\EndAccSupp{}\reponame}%
     \IfValueTF{#2}{%
       ~\hfill~
       \textbf{Deployment:}~{#2}%
@@ -604,15 +625,14 @@
 \tl_new:N \l_timelineevent_location_tl
 
 % Key-value interface for date and location in timeline events
-\keys_define:nn {timelineevent/dateandloc}
-  {
-    startdate .tl_set:N = \l_timelineevent_startdate_tl,
-    startdate .initial:n = {Present}, % Default to "Present"
-    enddate   .tl_set:N = \l_timelineevent_enddate_tl,
-    enddate   .initial:n = {Present}, % Default to "Present"
-    location  .tl_set:N = \l_timelineevent_location_tl,
-    location  .initial:n = {}         % Default to empty
-  }
+\keys_define:nn {timelineevent/dateandloc} {%
+  startdate .tl_set:N = \l_timelineevent_startdate_tl,
+  startdate .initial:n = {Present}, % Default to "Present"
+  enddate   .tl_set:N = \l_timelineevent_enddate_tl,
+  enddate   .initial:n = {Present}, % Default to "Present"
+  location  .tl_set:N = \l_timelineevent_location_tl,
+  location  .initial:n = {}         % Default to empty
+}
 
 % Command to format date and location for timeline events
 % Usage: \nextDateAndLocation[<key=value pairs>]
@@ -628,26 +648,13 @@
 }
 \ExplSyntaxOff
 
-%% ============================================================================
-%% Timeline Event Command - Provide Default Definition
-%% ============================================================================
-% Default placeholder command - will be redefined by timeline environments
-\newcommand{\nexttimelineevent}[2]{%
-  \PackageError{nextcv}{%
-    \string\nexttimelineevent\space used outside of timeline environment%
-  }{%
-    The \string\nexttimelineevent\space command can only be used within %
-    nexttimeline or nexttimeline* environments.%
-  }%
-}
-
-%% ============================================================================
-%% Additional Utility Commands
-%% ============================================================================
-
 \newcommand{\nextTag}[1]{%
   \tikz[baseline]\node[anchor=base,draw=body!30,rounded corners,inner xsep=1ex,inner ysep =0.75ex,text height=1.5ex,text depth=.25ex]{#1};
 }
+
+%% ============================================================================
+%% Hooks
+%% ============================================================================
 
 \AddToHook{begindocument/before}{%
   \pagestyle{empty}

@@ -13,7 +13,7 @@
 
 % Set PDF/A standard
 % \DocumentMetadata{pdfstandard=A-2b, pdfversion=1.7, lang=en}
-\documentclass[10pt,a4paper,withhyper]{nextcv}
+\documentclass[10pt,a4paper,withhyper,fieldnames]{nextcv}
 
 % Change the page layout if you need to
 \geometry{left=1.25cm,right=1.25cm,top=1.5cm,bottom=1.5cm,columnsep=1.2cm}
@@ -77,7 +77,7 @@
     % \gitlab{your_id}
 \end{resumeheader}
 
-\begin{nextsection}{Profile}[\nextSVGIcon{email}]
+\begin{nextsection}{Profile}[\nextProfileMarker]
     Experienced software engineer with expertise in cloud technologies, modern programming languages, and scalable application development. Passionate about creating innovative solutions and leading cross-functional teams to deliver high-quality products.
 \end{nextsection}
 
@@ -107,7 +107,7 @@
 \end{nextskills}
 
 
-\begin{nextsection}{Experience}[\nextSVGIcon{email}]
+\begin{nextsection}{Experience}[\nextExperienceMarker]
     \begin{nexttimeline}
         \nexttimelineevent{\nextDateAndLocation[startdate=2010-06-01, enddate=2014-05-31, location={New York, NY}]}{
             \nextItemHeading{Software Engineer}
@@ -138,12 +138,12 @@
 \end{nextsection}
 
 
-% % use ONLY \newpage if you want to force a page break for
-% % ONLY the current column
-\newpage
+%% use ONLY \newpage if you want to force a page break for
+%% ONLY the current column
+% \newpage
 
 
-\begin{nextsection}{Projects}[\nextSVGIcon{email}]
+\begin{nextsection}{Projects}[\nextProjectsMarker]
     \begin{nexttimeline*}
         \nexttimelineevent{\nextDateAndLocation[startdate=2010-06-01, enddate=2010-12-31]}{
             \nextItemHeading{Name 1 | Customer experience optimizer and sales management system}
@@ -161,7 +161,7 @@
 \end{nextsection}
 
 
-\begin{nextsection}{Education}[\nextSVGIcon{email}]
+\begin{nextsection}{Education}[\nextEducationMarker]
     \begin{nexttimeline}
         \nexttimelineevent{\nextDateAndLocation[startdate=2002-07, enddate=2006-06]}{
             \nextItemHeading{in Your Discipline | Ph.D.}
@@ -203,7 +203,7 @@
 \end{nextcertificates}
 
 
-\begin{nextsection}{Volunteering}[\nextSVGIcon{email}]
+\begin{nextsection}{Volunteering}[\nextVolunteeringMarker]
     \begin{nexttimeline*}
         \nexttimelineevent{\nextDateAndLocation[startdate=2010-06-01, enddate=2010-12-31]}{
             \nextItemHeading{Cyberpunk Mod Developer}
@@ -228,7 +228,7 @@
 \end{nextsection}
 
 
-\begin{nextsection}{Strengths}[\nextSVGIcon{email}]
+\begin{nextsection}{Strengths}[\nextStrengthsMarker]
     \nextTag{Problem Solving} \nextTag{Collaboration} \nextTag{Communication} \nextTag{Adaptability} \nextTag{Creativity}
 \end{nextsection}
 
