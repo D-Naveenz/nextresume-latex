@@ -48,7 +48,7 @@
 \RequirePackage{fontspec}
 
 %% 3. GEOMETRY AND PAGE LAYOUT (Before hyperref)
-\RequirePackage[margin=2cm]{geometry}
+\RequirePackage[a4paper, margin=1.5cm]{geometry}
 
 %% 4. HYPERREF AND METADATA (Must be loaded early, but after geometry)
 % Set hyperref options before loading the package to avoid duplicate option warnings
@@ -60,7 +60,6 @@
 
 \RequirePackage{hyperref}      % Hyperlinks and PDF features
 \RequirePackage{hyperxmp}      % XMP metadata support
-\RequirePackage{setspace}      % Line spacing control
 
 %% 5. GRAPHICS AND COLOR PACKAGES
 \RequirePackage{xcolor}        % Color definitions (must load before tikz)
@@ -70,27 +69,25 @@
 
 %% 6. ADVANCED GRAPHICS PACKAGES (After basic graphics)
 \RequirePackage{svg}           % SVG support (requires graphicx)
-\RequirePackage[export]{adjustbox} % Advanced image adjustments (requires graphicx)
 
-%% 7. MATH AND CALCULATION PACKAGES
-% \RequirePackage{xfp}           % Floating point math (L3 layer - replaces pgfmath for most calculations)
-
-%% 8. TEXT AND LAYOUT PACKAGES
-\RequirePackage{array}         % Extended array and tabular (load before tabularx)
-\RequirePackage{multirow}      % Multirow table cells
-\RequirePackage{tabularx}      % Extended tabular with X columns (requires array)
-\RequirePackage{tabularray}    % Modern table formatting (alternative to tabularx)
+%% 7. TEXT AND LAYOUT PACKAGES
+\RequirePackage{array}         % Extended array and tabular (required by tabularray)
+\RequirePackage{tabularray}    % Modern table formatting
 \RequirePackage{multicol}      % Multiple columns
 \RequirePackage[inline]{enumitem} % Enhanced lists
 
-%% 9. UTILITY AND STRING PROCESSING PACKAGES  
-\RequirePackage{listofitems}   % String splitting utilities (modern alternative to some ifthen uses)
-
-%% 10. ACCESSIBILITY AND COMPATIBILITY
+%% 8. ACCESSIBILITY AND COMPATIBILITY
 \RequirePackage{accsupp}       % Accessibility support for screen readers
 
-%% 11. TEXT ALIGNMENT (Load after other text packages)
-\RequirePackage[newcommands]{ragged2e} % Better text alignment - always enabled
+%% 9. TEXT ALIGNMENT (Load after other text packages)
+\RequirePackage[newcommands]{ragged2e} % Better text alignment
+
+%% 12. LUA LIBRARIES
+\begin{luacode*}
+  -- Load LUA libraries
+  TokenGrid = require("next_tokengrid")
+  Utils = require("next_utils")
+\end{luacode*}
 
 \ExplSyntaxOn
 
@@ -140,33 +137,12 @@
 \colorlet{tagline}{accent}
 \colorlet{link}{blue}
 
-% Define styles for markers
-\newcommand{\nextItemMarker}{{\small\textbullet}}
-
-% Define all marker symbols once to avoid repeated processing
-% All markers are processed at document start for maximum efficiency
-\AtBeginDocument{%
-  % SVG-based markers
-  \def\nextProjectLinkMarker{\nextSVGIcon{github}[1em]}%
-  \def\nextProjectRoleMarker{\nextSVGIcon{github}[1em]}%
-
-  % FontAwesome markers (replaced with text placeholders due to font issues)
-  \def\nextDateMarker{\textbf{📅}}%
-  \def\nextLocationMarker{\textbf{📍}}%
-  \def\nextCertificateMarker{\textbf{🏆}}%
-  \def\nextProjectMarker{\textbf{📁}}%
-  
-  % Accessibility text for screen readers
-  \def\rolename{Role}%
-  \def\projectlink{Project Link}%
-}
-
-% Define text styles
-\newcommand{\nextNameStyle}[1]{{\Huge\bfseries\color{name}#1}}%
-\newcommand{\nextTaglineStyle}[1]{{\large\itshape\color{tagline}#1}}%
-\newcommand{\nextPersonalInfoStyle}[1]{{\footnotesize\bfseries#1}}%
-\newcommand{\nextHeadingStyle}[1]{{\LARGE\bfseries\color{heading}#1}}%
-\newcommand{\nextSubheadingStyle}[1]{{\Large\bfseries\color{heading}#1}}%
+% Define text styles optimized for 10pt base font
+\newcommand{\nextNameStyle}[1]{{\huge\bfseries\color{name}#1}}%          % 20.74pt -> better for 10pt base
+\newcommand{\nextTaglineStyle}[1]{{\large\itshape\color{tagline}#1}}%     % 12pt (unchanged - good proportion)
+\newcommand{\nextPersonalInfoStyle}[1]{{\footnotesize\bfseries#1}}%       % 8pt (unchanged - appropriate)
+\newcommand{\nextHeadingStyle}[1]{{\Large\bfseries\color{heading}#1}}%    % 14.4pt -> reduced from LARGE (17.28pt)
+\newcommand{\nextSubheadingStyle}[1]{{\large\bfseries\color{heading}#1}}% % 12pt -> reduced from Large (14.4pt)
 
 % Configure itemize marker (enumitem already loaded above)
 \setlist[itemize]{label=\nextItemMarker}
@@ -178,6 +154,17 @@
   \endgroup%
 }
 
+% Define styles for markers
+\newcommand{\nextItemMarker}{{\small\textbullet}}
+
+% Define all marker symbols once to avoid repeated processing
+% All markers are processed at document start for maximum efficiency
+\AtBeginDocument{%
+  % SVG-based markers
+  \def\nextProjectLinkMarker{\nextSVGIcon{github}[1em]}%
+  \def\nextProjectRoleMarker{\nextSVGIcon{github}[1em]}%
+}
+
 %% ============= Personal Info Data Structure (Lua Implementation) =============
 
 % Define boolean values for Lua
@@ -185,10 +172,6 @@
 \newcommand{\resume@withhypervalue}{\bool_if:NT \g_withhyper_bool { true } \bool_if:NF \g_withhyper_bool { false }}
 
 \begin{luacode*}
-  -- Load LUA libraries
-  TokenGrid = require("next_tokengrid")
-  Utils = require("next_utils")
-
   -- Create a new TokenGrid instance for personal info
   next_personal_info = TokenGrid:new("\\resume@hidefieldnamesvalue", "\\resume@withhypervalue")
 \end{luacode*}
@@ -321,7 +304,7 @@
     \medskip
     {\nextPersonalInfoStyle{\resume@info@printfields{#1}}\par}
   \end{minipage}\par
-  \vspace{12pt}
+  \vspace{6pt}
   \endgroup
 }
 
@@ -407,8 +390,7 @@
   \NewDocumentEnvironment{skillsection}{ m O{1em} }{%
     % Prevent column breaks within skill sections
     \begin{minipage}[t]{\dimexpr\columnwidth-3pt\relax} % [t] for top alignment
-      {\large\textcolor{emphasis}{\bfseries-- \MakeUppercase{##1}}}\par%
-      \smallskip
+      {\normalsize\textcolor{emphasis}{\bfseries-- \MakeUppercase{##1}}}\par%
       \def\contentwidth{\dimexpr\linewidth-##2\relax}%
       \hfill
       \begin{minipage}[t]{\contentwidth} % [t] for top alignment
@@ -416,7 +398,7 @@
   }{%
       \end{minipage}
     \end{minipage}
-    \par\medskip%
+    \vspace{6pt}%
   }%
 
   \begin{nextsection}{Skills}[\nextSVGIcon{email}]%
@@ -450,6 +432,9 @@
   % Total available = \linewidth - date width - gaps - timeline thickness - padding - safety margin
   \pgfmathsetmacro{\availablewidth}{\linewidth/1cm - \datewidth - \timelinegap - \eventgap - \timelinethickness - 2*\eventpadding - \safemargin}
   \pgfmathsetmacro{\eventtextwidth}{\availablewidth - 0.4}% Subtract for borders
+
+  \pgfmathsetmacro{\eventspacing}{0.6}% Spacing between events in cm
+  \pgfmathsetmacro{\timelinepadding}{0.4}% Vertical padding above/below timeline
   
   % Declare layers before starting tikzpicture
   \pgfdeclarelayer{background}% For timeline
@@ -459,9 +444,7 @@
     % These styles apply to ALL elements in this tikzpicture
     event/.style={
       rectangle, 
-      draw=accent!60, 
       fill=body!5, 
-      thick,
       minimum width=\availablewidth cm,
       text width=\eventtextwidth cm,
       align=left,
@@ -472,7 +455,7 @@
       text width=\datewidth cm,
       align=right,
       anchor=east,
-      font=\color{emphasis}
+      font=\tiny\color{emphasis}
     },
     timeline/.style={
       draw=accent!80, 
@@ -494,15 +477,10 @@
       inner sep=0pt
     }
   ]
-  % Initialize timeline bounds tracking
-  \def\timelinetop{0.6}% Start above first event (using eventspacing value)
-  \def\timelinebottom{-0.4}% Will be updated as events are added
 
   % Command to add timeline events
   \renewcommand{\nexttimelineevent}[2]{%
     \stepcounter{timelineevent}%
-    % Calculate position based on previous event's bottom plus spacing
-    \pgfmathsetmacro{\eventspacing}{0.8}% Spacing between events in cm
     
     % For first event, use initial position; for subsequent events, use last bottom minus spacing
     \ifnum\thetimelineevent=1%
@@ -535,14 +513,13 @@
     \pgfgetlastxy{\tempx}{\eventbottom}
     \pgfmathsetmacro{\tempbottom}{min(\datebottom/1cm,\eventbottom/1cm)}
     \xdef\lastbottom{\tempbottom}
-    
-    % Update timeline bottom to extend below the last event
-    \pgfmathsetmacro{\newtimelinebottom}{\tempbottom - \eventspacing}
-    \xdef\timelinebottom{\newtimelinebottom}
   }
 }{
   % Draw everything at the end
   \ifnum\thetimelineevent>0%
+    % Calculate timeline bounds: from padding above first event to padding below last event
+    \pgfmathsetmacro{\timelinetop}{\timelinepadding}
+    \pgfmathsetmacro{\timelinebottom}{\lastbottom - \timelinepadding}
     % LAYER 1: Draw timeline on background layer (behind everything)
     \begin{pgfonlayer}{background}
       \draw[timeline] (0,\timelinetop) -- (0,\timelinebottom);
@@ -551,45 +528,38 @@
   \end{tikzpicture}
 }
 
-% Starred version: Simple table-based timeline without graphics
+% Starred version: Simple table-based timeline with proper row spacing
 \newenvironment{nexttimeline*}{%
   % Create proper scoping for command redefinition
   \begingroup
-  \setcounter{timelineevent}{0}
-  
   % Calculate dynamic widths to match nexttimeline environment
   % Use conditional definitions to avoid redefinition errors
   \@ifundefined{staradatewidth}{\newlength{\staradatewidth}}{}
-  \@ifundefined{startimelinegap}{\newlength{\startimelinegap}}{}
   \@ifundefined{stareventgap}{\newlength{\stareventgap}}{}
   
   \setlength{\staradatewidth}{3cm}      % Date column width (matches TikZ version)
-  \setlength{\startimelinegap}{0.8em}    % Left margin (aligns with non-star)
-  \setlength{\stareventgap}{1.5cm}       % Space between columns (matches timelinegap + eventgap from TikZ)
+  \setlength{\stareventgap}{1cm}         % Space between columns (reduced for tblr)
   
-  % Calculate content width: total width - left gap - date width - column gap
+  % Calculate content width: total width - date width - column gap - safety margin
   \@ifundefined{starcontentwidth}{\newlength{\starcontentwidth}}{}
-  \setlength{\starcontentwidth}{\dimexpr\linewidth-\staradatewidth-\stareventgap-0.5em\relax}
+  \setlength{\starcontentwidth}{\dimexpr\linewidth-\staradatewidth-\stareventgap-1em\relax}
 
-  % Create a local tabular-specific definition
+  % Each nexttimelineevent creates its own complete table
   \renewcommand{\nexttimelineevent}[2]{%
-    \stepcounter{timelineevent}%
-    \ifnum\thetimelineevent>1 \\ \fi
-    {\color{emphasis}##1} & {##2}%
+    \begin{tabular}[t]{
+      @{}                                              % No left padding
+      >{\raggedleft\arraybackslash}p{\staradatewidth}  % Right-aligned date column
+      @{\hspace{\stareventgap}}                        % Fixed space between columns  
+      p{\starcontentwidth}                             % Left-aligned content column
+      @{}                                              % No right padding
+    }
+    {\color{emphasis}##1} & {##2} \\
+    \end{tabular}%
+    \vspace{1em}%
   }%
-  
-  % Start the tabular table with precise alignment
-  \renewcommand{\arraystretch}{1.5}%
-  \begin{tabular}[t]{
-    @{}     % Fixed left space
-    >{\raggedleft\arraybackslash}p{\staradatewidth}  % Right-aligned date column
-    @{\hspace{\stareventgap}}        % Fixed space between columns  
-    p{\starcontentwidth}             % Left-aligned content column
-    @{}                          % No right padding
-  }
 }{
-  \end{tabular}%
-  \endgroup
+  \vspace{-1em}% Remove the last vspace from the final timeline event
+  \endgroup%
 }
 
 
@@ -599,7 +569,7 @@
   }%
 
   \begin{nextsection}{Certificates}[\nextSVGIcon{email}]%
-    \begin{itemize}[leftmargin=*,topsep=2pt,itemsep=1pt]
+    \begin{itemize}
 }{%
     \end{itemize}%
   \end{nextsection}%

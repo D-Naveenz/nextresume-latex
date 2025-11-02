@@ -38,9 +38,9 @@
     ],
     "Lua.workspace.library": [
         "${addons}/tex-lualatex/module/library",
-        "${addons}/tex-luatex/module/library",
         "${addons}/tex-lualibs/module/library",
-        "c:\\Users\\dashe\\.vscode\\extensions\\joseffriedrich.luatex-0.18.0\\library\\lualatex"
+        "c:\\Users\\dashe\\.vscode\\extensions\\joseffriedrich.luatex-0.18.0\\library\\lualatex",
+        "${addons}/tex-luatex/module/library"
     ],
     "Lua.workspace.checkThirdParty": false,
     "latex-workshop.latex.tools": [
