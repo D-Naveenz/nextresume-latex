@@ -1,7 +1,14 @@
 %%%%%%%%%%%%%%%%%
-%% This is The CV texmplate created using nextcv.cls, 
-%%    and the upgraded version of the sample.tex file provided by the original author.
-%% Written by LianTze Lim, Naveen Dharmathunga
+%% NextResume Template v2.0.0 - A Modern LaTeX Resume Template
+%% Created using nextresume.cls with enhanced features and styling
+%% Author: Naveen Dharmathunga (dasheenaveen@outlook.com)
+%% Based on original concepts by LianTze Lim
+%% ================================================================================
+%% This template showcases the capabilities of the NextResume class including:
+%% - Modern SVG icons and responsive layout
+%% - Lua-powered dynamic content generation  
+%% - Professional typography and color schemes
+%% - Hyperlinked contact information and references
 %% ================================================================================
 %% It may be distributed and/or modified under the
 %% conditions of the LaTeX Project Public License, either version 1.3
@@ -37,20 +44,6 @@
 \colorlet{link}{DodgerBlue}
 \colorlet{body}{LightGrey}
 
-% Change some fonts, if necessary
-% \renewcommand{\namefont}{\Huge\rmfamily\bfseries}
-% \renewcommand{\personalinfofont}{\footnotesize}
-% \renewcommand{\cvsectionfont}{\LARGE\rmfamily\bfseries}
-% \renewcommand{\cvsubsectionfont}{\large\bfseries}
-
-% Change the bullets for itemize and rating marker
-% for \cvskill if you want to
-% \renewcommand{\cvItemMarker}{{\small\textbullet}}
-% \renewcommand{\cvRatingMarker}{\faIcon{circle}}
-% ...and the markers for the date/location for \cvevent
-% \renewcommand{\cvDateMarker}{\faCalendar*[regular]}
-% \renewcommand{\cvLocationMarker}{\faMapMarker*}
-
 \begin{document}
 %% ChkTeX will complain about wrong length of dashes. You can ignore it. or use {-} instead of -.
 %% https://tex.stackexchange.com/a/687676
@@ -59,18 +52,18 @@
 \begin{resumeheader}[3]
     \profilephoto{Globe_High}{2.8cm}
 
-    \name{John Doe}
-    \jobtitle{Software Engineer}
+    \name{Alexandra Chen}
+    \jobtitle{Senior Full-Stack Developer \& Cloud Solutions Architect}
 
     % Contact Information
-    \email{your.name@email.com}
-    \phone{000--00--0000}
+    \email{alexandra.chen@techsolutions.com}
+    \phone{+1-555-234-5678}
     % These are optional and you can remove them
-    \homepage{www.homepage.com}
-    \linkedin{your_id}
-    \github{your_id}
-    \medium{@medium_handle}
-    \twitter{xhandle}
+    \homepage{www.alexandra-chen.dev}
+    \linkedin{alexandra-chen-dev}
+    \github{alex-chen-dev}
+    \medium{@alex-tech-insights}
+    \twitter{alexchendev}
     %% Or you can declare your own field with
     %% \NewInfoFiled{fieldname}{symbol}[optional hyperlink prefix] and use it:
     % \NewInfoField{gitlab}{\faGitlab}[https://gitlab.com/]
@@ -78,7 +71,7 @@
 \end{resumeheader}
 
 \begin{nextsection}{Profile}[\nextProfileMarker]
-    Experienced software engineer with expertise in cloud technologies, modern programming languages, and scalable application development. Passionate about creating innovative solutions and leading cross-functional teams to deliver high-quality products.
+    Innovative full-stack developer with 8+ years of experience architecting scalable cloud solutions and leading high-performance engineering teams. Expertise in modern web technologies, microservices architecture, and DevOps practices with a proven track record of delivering enterprise-grade applications.
 \end{nextsection}
 
 \begin{nextskills}[2]
@@ -88,51 +81,63 @@
         \weightedskill{GCP}{4}
     \end{skillsection}
 
-    \begin{skillsection}{Languages}
-        C\#, Python, JavaScript \& TypeScript
+    \begin{skillsection}{Programming Languages}
+        JavaScript/TypeScript, Python, Java, C\#, Go, Rust
     \end{skillsection}
 
-    \begin{skillsection}{Frameworks \& Libraries}
-        % Adding {} before '.' to inform LaTeX that the period is not a sentence ending punctuation. 
-        {}.NET (7, 8, 9), Entity Framework, WinAppSDK (WinUI), Angular \& Vue.js, Apache Spark, Pandas
+    \begin{skillsection}{Frontend Technologies}
+        React, Vue.js, Angular, Next.js, Svelte, Tailwind CSS, Material-UI
     \end{skillsection}
 
-    \begin{skillsection}{Databases}
-        MS SQL Server, MySQL
+    \begin{skillsection}{Backend \& APIs}
+        Node.js, Express, Django, FastAPI, Spring Boot, {}.NET Core, GraphQL, REST
     \end{skillsection}
 
-    \begin{skillsection}{VCS}
-        Git | GitHub, Bitbucket, Azure DevOps
+    \begin{skillsection}{Databases \& Storage}
+        PostgreSQL, MongoDB, Redis, Elasticsearch, Firebase, DynamoDB
+    \end{skillsection}
+
+    \begin{skillsection}{DevOps \& Tools}
+        Docker, Kubernetes, Terraform, Jenkins, GitHub Actions, Prometheus, Grafana
     \end{skillsection}
 \end{nextskills}
 
 
 \begin{nextsection}{Experience}[\nextExperienceMarker]
     \begin{nexttimeline}
-        \nexttimelineevent{\nextDateAndLocation[startdate=2010-06-01, enddate=2014-05-31, location={New York, NY}]}{
-            \nextItemHeading{Software Engineer}
-            \nextItemSubheading{Tech Solutions Inc.}
+        \nexttimelineevent{\nextDateAndLocation[startdate=2021-03-01, location={San Francisco, CA}]}{
+            \nextItemHeading{Senior Full-Stack Developer \& Tech Lead}
+            \nextItemSubheading{CloudTech Solutions}
             \begin{itemize}
-                \item Specialized in Software Engineering
-                \item GPA\@: 3.8/4.0
-                \item Dean's List all semesters
-                \item Relevant coursework: Algorithms, Data Structures
+                \item Led 8 engineers developing microservices-based e-commerce platform serving 2M+ users
+                \item Architected real-time analytics dashboard reducing data processing time by 75\%
+                \item Established CI/CD pipelines increasing deployment frequency by 300\%
             \end{itemize}
             \smallskip
-            \nextTechstack{ASP.NET, Vue.js, Node.js, MS SQL}
+            \nextTechstack{React, Node.js, PostgreSQL, AWS, Docker, Kubernetes}
         }
 
-        \nexttimelineevent{\nextDateAndLocation[startdate=2014-05-01, enddate=2014-08-31, location={Boston, MA}]}{
-            \nextItemHeading{Research Assistant}
-            \nextItemSubheading{AI Lab}
+        \nexttimelineevent{\nextDateAndLocation[startdate=2018-07-01, enddate=2021-02-28, location={Seattle, WA}]}{
+            \nextItemHeading{Full-Stack Developer}
+            \nextItemSubheading{InnovateTech Corp}
             \begin{itemize}
-                \item Machine Learning research project
-                \item Published 2 conference papers
-                \item Developed novel NLP algorithms
-                \item Mentored 3 undergraduate students
+                \item Developed 12+ web applications using modern JavaScript frameworks
+                \item Optimized database performance improving response times by 40\%
+                \item Implemented responsive, accessible UIs and integrated payment systems
             \end{itemize}
             \smallskip
-            \nextTechstack{ASP.NET, Vue.js, Node.js, MS SQL}
+            \nextTechstack{Vue.js, Python, Django, MongoDB, Azure, Redis}
+        }
+
+        \nexttimelineevent{\nextDateAndLocation[startdate=2016-09-01, enddate=2018-06-30, location={Austin, TX}]}{
+            \nextItemHeading{Junior Software Developer}
+            \nextItemSubheading{StartupHub Technologies}
+            \begin{itemize}
+                \item Built RESTful APIs and database schemas for startup products
+                \item Participated in agile development and contributed to open-source projects
+            \end{itemize}
+            \smallskip
+            \nextTechstack{JavaScript, Express.js, MySQL, Git, Docker}
         }
     \end{nexttimeline}
 \end{nextsection}
@@ -140,23 +145,48 @@
 
 %% use ONLY \newpage if you want to force a page break for
 %% ONLY the current column
-% \newpage
+\newpage
 
 
 \begin{nextsection}{Projects}[\nextProjectsMarker]
     \begin{nexttimeline*}
-        \nexttimelineevent{\nextDateAndLocation[startdate=2010-06-01, enddate=2010-12-31]}{
-            \nextItemHeading{Name 1 | Customer experience optimizer and sales management system}
-            \nextItemSubheading{Your Role}
-            \nextProjectRef{https://www.gitplatform.com/YourName/ProjectLink}[Azure VM]
+        \nexttimelineevent{\nextDateAndLocation[startdate=2023-01-01, enddate=2023-08-31]}{
+            \nextItemHeading{EcoTrack | Sustainable Living Analytics Platform}
+            \nextItemSubheading{Lead Developer \& System Architect}
+            \nextProjectRef{https://github.com/alex-chen-dev/ecotrack}[GitHub Repository]
             \begin{itemize}
-                \item Specialized in Software Engineering
-                \item GPA: 3.8/4.0
-                \item Dean's List all semesters
-                \item Relevant coursework: Algorithms, Data Structures
+                \item Built full-stack application tracking carbon footprint for 10K+ users
+                \item Implemented ML recommendations engine increasing engagement by 65\%
+                \item Achieved 99.9\% API uptime and Google Lighthouse score of 95+
             \end{itemize}
             \smallskip
-            \nextTechstack{ASP.NET, Vue.js, Node.js, MS SQL}
+            \nextTechstack{React, TypeScript, Node.js, PostgreSQL, AWS Lambda, D3.js}
+        }
+
+        \nexttimelineevent{\nextDateAndLocation[startdate=2022-04-01, enddate=2022-10-31]}{
+            \nextItemHeading{DevOps Automation Suite | CI/CD Pipeline Management}
+            \nextItemSubheading{Technical Lead}
+            \nextProjectRef{https://github.com/alex-chen-dev/devops-suite}[Open Source Project]
+            \begin{itemize}
+                \item Developed DevOps toolchain reducing deployment time from 2 hours to 15 minutes
+                \item Created testing framework with 90\% coverage across 25+ microservices
+                \item Built monitoring dashboard adopted by 500+ developers
+            \end{itemize}
+            \smallskip
+            \nextTechstack{Docker, Kubernetes, Jenkins, Terraform, Prometheus, Grafana, Python}
+        }
+
+        \nexttimelineevent{\nextDateAndLocation[startdate=2021-11-01, enddate=2022-03-31]}{
+            \nextItemHeading{Real-Time Chat Engine | Scalable Messaging Platform}
+            \nextItemSubheading{Full-Stack Developer}
+            \nextProjectRef{https://github.com/alex-chen-dev/chat-engine}[Live Demo]
+            \begin{itemize}
+                \item Architected WebSocket messaging system supporting 50K+ concurrent connections
+                \item Implemented end-to-end encryption with sub-100ms latency
+                \item Built PWA React frontend with offline synchronization
+            \end{itemize}
+            \smallskip
+            \nextTechstack{Socket.io, React, Redis, MongoDB, AWS ECS, WebRTC}
         }
     \end{nexttimeline*}
 \end{nextsection}
@@ -164,34 +194,22 @@
 
 \begin{nextsection}{Education}[\nextEducationMarker]
     \begin{nexttimeline}
-        \nexttimelineevent{\nextDateAndLocation[startdate=2002-07, enddate=2006-06]}{
-            \nextItemHeading{in Your Discipline | Ph.D.}
-            \nextItemSubheading{Your University}
+        \nexttimelineevent{\nextDateAndLocation[startdate=2014-09, enddate=2016-06, location={Stanford, CA}]}{
+            \nextItemHeading{Computer Science | M.S.}
+            \nextItemSubheading{Stanford University}
             \begin{itemize}
-                \item Wonderful Research 1
-                \item Wonderful Research 2
+                \item Specialization: Distributed Systems and Cloud Computing Architecture
+                \item Thesis: ``Optimizing Microservices Communication in Large-Scale Applications''
+                \item GPA: 3.9/4.0, Summa Cum Laude, TA for CS 142 \& CS 144
             \end{itemize}
         }
 
-        \nexttimelineevent{\nextDateAndLocation[startdate=2002-07, enddate=2006-06]}{
-            \nextItemHeading{in Your Discipline | M.Sc.}
-            \nextItemSubheading{Your University}
+        \nexttimelineevent{\nextDateAndLocation[startdate=2010-09, enddate=2014-06, location={Berkeley, CA}]}{
+            \nextItemHeading{Computer Science | B.S.}
+            \nextItemSubheading{University of California, Berkeley}
             \begin{itemize}
-                \item Specialized in Software Engineering
-                \item GPA: 3.8/4.0
-                \item Dean's List all semesters
-                \item Relevant coursework: Algorithms, Data Structures
-            \end{itemize}
-        }
-
-        \nexttimelineevent{\nextDateAndLocation[startdate=2002-07, enddate=2006-06]}{
-            \nextItemHeading{in Your Discipline | B.Sc.}
-            \nextItemSubheading{Your University}
-            \begin{itemize}
-                \item Specialized in Software Engineering
-                \item GPA: 3.8/4.0
-                \item Dean's List all semesters
-                \item Relevant coursework: Algorithms, Data Structures
+                \item Magna Cum Laude, Phi Beta Kappa, GPA: 3.8/4.0, Dean's List 6 semesters
+                \item Senior Capstone: Real-time collaborative code editor with 1000+ active users
             \end{itemize}
         }
     \end{nexttimeline}
@@ -199,38 +217,51 @@
 
 
 \begin{nextcertificates}
-    \nextCertificate{Certified Kubernetes Administrator (CKA)}{Cloud Native Computing Foundation}{https://www.yourcertificate/link}
-    \nextCertificate{Microsoft Certified: Azure Solutions Architect Expert}{Microsoft}{https://www.yourcertificate/link}
+    \nextCertificate{AWS Certified Solutions Architect Professional}{Amazon Web Services}{https://aws.amazon.com/certification/}
+    \nextCertificate{Certified Kubernetes Administrator (CKA)}{Cloud Native Computing Foundation}{https://www.cncf.io/certification/cka/}
+    \nextCertificate{Google Cloud Professional Cloud Architect}{Google Cloud}{https://cloud.google.com/certification/}
+    \nextCertificate{Microsoft Certified: Azure Solutions Architect Expert}{Microsoft}{https://docs.microsoft.com/en-us/certifications/}
 \end{nextcertificates}
 
 
 \begin{nextsection}{Volunteering}[\nextVolunteeringMarker]
     \begin{nexttimeline*}
-        \nexttimelineevent{\nextDateAndLocation[startdate=2010-06-01, enddate=2010-12-31]}{
-            \nextItemHeading{Cyberpunk Mod Developer}
-            \nextItemSubheading{Nexus Mods}
+        \nexttimelineevent{\nextDateAndLocation[startdate=2020-01-01]}{
+            \nextItemHeading{Technical Mentor \& Code Reviewer}
+            \nextItemSubheading{Code for America | Open Source Contributor}
             \begin{itemize}
-                \item Developed C++/Redscript mods for Cyberpunk 2077 that fixed critical bugs and improved game performance
-                \item Collaborated with professional developers to enhance in-game environments and NPC behaviors
+                \item Mentored 15+ junior developers through code reviews and pair programming
+                \item Contributed to 8 civic technology projects and led community workshops
+                \item Established coding bootcamp curriculum adopted by 3 local organizations
             \end{itemize}
             \smallskip
-            \nextTechstack{C++, Redscript, LUA, WolvenKit, RedEngine 4}
+            \nextTechstack{React, Node.js, Python, Git, Agile Methodologies}
         }
         
-        \nexttimelineevent{\nextDateAndLocation[startdate=2010-06-01, enddate=2010-12-31]}{
-            \nextItemHeading{Web Administrator}
-            \nextItemSubheading{Leo Club of University of Colombo}
+        \nexttimelineevent{\nextDateAndLocation[startdate=2018-06-01, enddate=2021-12-31]}{
+            \nextItemHeading{Tech Lead \& Platform Architect}
+            \nextItemSubheading{TechForGood Initiative}
             \begin{itemize}
-                \item Developed and maintained the club website, enhancing online presence and member engagement
-                \item Implemented a monthly newsletter system that increased event participation by 30%
+                \item Architected platform connecting 500+ volunteers with nonprofits
+                \item Implemented matching algorithm reducing coordination time by 60\%
+                \item Organized hackathons raising \$25K+ for local charities
             \end{itemize}
+            \smallskip
+            \nextTechstack{Vue.js, Firebase, Cloud Functions, Progressive Web Apps}
         }
     \end{nexttimeline*}
 \end{nextsection}
 
 
 \begin{nextsection}{Strengths}[\nextStrengthsMarker]
-    \nextTag{Problem Solving} \nextTag{Collaboration} \nextTag{Communication} \nextTag{Adaptability} \nextTag{Creativity}
+    \nextTag{System Architecture}
+    \nextTag{Technical Leadership}
+    \nextTag{Performance Optimization}
+    \nextTag{Cross-Functional Collaboration}\\[0.5em]
+    \nextTag{DevOps \& Automation}
+    \nextTag{Mentoring \& Knowledge Transfer}
+    \nextTag{Problem-Solving}
+    \nextTag{Agile Development}
 \end{nextsection}
 
 

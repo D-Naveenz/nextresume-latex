@@ -145,6 +145,12 @@
 % Configure itemize marker (enumitem already loaded above)
 \setlist[itemize]{label=\nextItemMarker}
 
+% Include an SVG icon from the icons directory
+% Usage: \nextSVGIcon{icon_name}[optional_height]
+% Parameters:
+%   #1 (mandatory) - Name of the SVG file (without .svg extension)
+%   #2 (optional) - Height of the icon (default: 1.2em)
+% Example: \nextSVGIcon{email}[1.5em]
 \NewDocumentCommand{\nextSVGIcon}{m O{1.2em}}{%
   \begingroup%
   \def\@TexIconPath{./icons/#1.svg}%
@@ -180,10 +186,23 @@
   next_personal_info = TokenGrid:new(hideFieldNames, withhyper)
 \end{luacode*}
 
-% This command is a higher-level utility for defining new fields (e.g., email, phone) with associated symbols and optional hyperlink prefixes.
-% Added starred mode to create the field with full URL
-% \NewInfoField{<fieldname>}{<symbol>}[<hyperlink prefix>] -> (ex: <github symbol> D-Naveenz) 
-% \NewInfoField*{<fieldname>}{<symbol>} -> (ex: <github symbol> https://github.com/D-Naveenz)
+% Define new personal information fields with icons and optional hyperlinks
+% Usage:
+%   \NewInfoField{fieldname}{symbol}[hyperlink_prefix]  - Creates field with prefix hyperlinks
+%   \NewInfoField*{fieldname}{symbol}                   - Creates field where input is full URL
+%
+% Parameters:
+%   * (optional)     - Starred version treats user input as complete URL
+%   #2 (mandatory)   - Field name (used as command name, e.g., "email" creates \email command)
+%   #3 (mandatory)   - Symbol/icon to display (typically \nextSVGIcon{...})
+%   #4 (optional)    - Hyperlink prefix (e.g., "mailto:", "https://github.com/")
+%
+% Examples:
+%   \NewInfoField{email}{\nextSVGIcon{email}}[mailto:]          % Creates \email{user@domain.com}
+%   \NewInfoField{github}{\nextSVGIcon{github}}[https://github.com/]  % Creates \github{username}
+%   \NewInfoField*{website}{\nextSVGIcon{internet}}             % Creates \website{https://full.url.com}
+%
+% The created commands will automatically generate hyperlinks when [withhyper] class option is used.
 \NewDocumentCommand{\NewInfoField}{s m m o}{%
   \IfBooleanTF{#1}
     {% Starred version: full URL mode
@@ -219,26 +238,17 @@
 
 % Set PDF metadata using hyperref and hyperxmp
 % Parameters: <author name> <job title>
+% Set PDF metadata using hyperref
+% Parameters: #1 = author name, #2 = job title
 \newcommand{\resume@SetMetadata}[2]{%
-  % Set up hyperref configuration (combining color setup with metadata)  
-  \bool_if:NTF \g_withhyper_bool {
-    % Set XMP metadata using hyperxmp with link colors
-    \hypersetup{
-      linkcolor=link, 
-      urlcolor=link,
-      pdfauthor={#1},
-      pdftitle={#2},
-      pdfsubject={Resume~of~#1},
-      pdfkeywords={Resume,~CV,~#2,~#1}
-    }
-  }{
-    % Set XMP metadata using hyperxmp only
-    \hypersetup{
-      pdfauthor={#1},
-      pdftitle={#2},
-      pdfsubject={Resume~of~#1},
-      pdfkeywords={Resume,~CV,~#2,~#1}
-    }
+  % Set up hyperref configuration with PDF metadata only
+  \hypersetup{
+    pdfauthor={#1},
+    pdftitle={Resume~-~#1},
+    pdfsubject={Resume~of~#1~-~#2},
+    pdfkeywords={Resume,~Curriculum~Vitae,~CV,~#1,~#2},
+    pdfcreator={NextResume~v2.0.0},
+    pdfproducer={LaTeX~with~NextResume~class}
   }
 }
 
@@ -290,11 +300,11 @@
   \NewInfoField{github}{\nextSVGIcon{github}}[https://github.com/]%
   \NewInfoField{medium}{\nextSVGIcon{medium}}[https://medium.com/]%
 
-  % Hyperref configuration is set in AtBeginDocument hook
-  \resume@SetMetadata{\@name}{\@jobtitle}
-
   \begingroup
 }{%
+  % Set PDF metadata after name and jobtitle have been defined
+  \resume@SetMetadata{\@name}{\@jobtitle}
+  
   \resume@profilephoto\hfill%
   \begin{minipage}{\dimexpr\linewidth-\resume@profilephoto@width-\resume@profilephoto@hspace\relax}%
     \raggedright%
@@ -417,9 +427,23 @@
 %% ============================================================================
 %% Timeline Environment
 %% ============================================================================
-% Default placeholder command - will be redefined by timeline environments
+% Timeline event command - redefined within timeline environments
+% Usage: \nexttimelineevent{date_and_location}{content}
+% Parameters:
+%   #1 (mandatory) - Date and location information (use \nextDateAndLocation)
+%   #2 (mandatory) - Content block (typically contains \nextItemHeading, \nextItemSubheading, etc.)
+% 
+% This command can only be used within nexttimeline or nexttimeline* environments.
+% Example:
+%   \nexttimelineevent{\nextDateAndLocation[startdate=2020-01, enddate=2023-12, location={City, State}]}{
+%     \nextItemHeading{Job Title}
+%     \nextItemSubheading{Company Name}
+%     \begin{itemize}
+%       \item Achievement or responsibility
+%     \end{itemize}
+%   }
 \newcommand{\nexttimelineevent}[2]{%
-  \PackageError{nextcv}{%
+  \PackageError{nextresume}{%
     \string\nexttimelineevent\space used outside of timeline environment%
   }{%
     The \string\nexttimelineevent\space command can only be used within %
@@ -584,6 +608,15 @@
 %% ============================================================================
 
 \newenvironment{nextcertificates}{
+  % Add a certificate entry within the nextcertificates environment
+  % Usage: \nextCertificate{certificate_name}{issuing_organization}{verification_url}
+  % 
+  % Parameters:
+  %   #1 - Name of the certificate or certification
+  %   #2 - Issuing organization or authority  
+  %   #3 - URL for certificate verification or more information
+  %
+  % Example: \nextCertificate{AWS Certified Solutions Architect}{Amazon Web Services}{https://aws.amazon.com/certification/}
   \newcommand{\nextCertificate}[3]{%
     \item \bfseries\textcolor{emphasis}{##1 | ##2} \\ \small{\href{##3}{##3}}
   }%
@@ -595,8 +628,21 @@
   \end{nextsection}%
 }
 
+% Content formatting commands for timeline entries and sections
+
+% Format the main heading for timeline entries (job titles, project names, degrees)
+% Usage: \nextItemHeading{Job Title | Company Name}
+% Example: \nextItemHeading{Senior Developer | Tech Corp}
 \newcommand{\nextItemHeading}[1]{{\large\bfseries\color{heading}#1}\par}%
+
+% Format the subheading for timeline entries (company names, universities, roles)  
+% Usage: \nextItemSubheading{Organization or Role Name}
+% Example: \nextItemSubheading{University of Technology}
 \newcommand{\nextItemSubheading}[1]{{\normalsize\bfseries\color{subheading}#1}\par}%
+
+% Format technology stack information with automatic "Technologies:" prefix
+% Usage: \nextTechstack{comma-separated list of technologies}
+% Example: \nextTechstack{React, Node.js, PostgreSQL, AWS}
 \newcommand{\nextTechstack}[1]{{\bfseries\color{emphasis}Technologies:~#1}\par}%
 
 %% ============================================================================
@@ -608,6 +654,20 @@
 % Parameters: 
 % - {string} #1 - Repository URL
 % - {string} [#2] - Deployment Location (optional)
+% Add repository and deployment links to project entries
+% Usage: \nextProjectRef{repository_url}[deployment_info]
+%
+% Parameters:
+%   #1 (mandatory) - Full URL to the repository (e.g., GitHub, GitLab)
+%   #2 (optional)  - Deployment information or live demo link text
+%
+% Examples:
+%   \nextProjectRef{https://github.com/username/project}[Live Demo]
+%   \nextProjectRef{https://gitlab.com/username/project}[AWS Deployment]
+%   \nextProjectRef{https://github.com/username/project}
+%
+% The command automatically extracts the repository name from the URL and creates
+% a hyperlink when the [withhyper] class option is enabled.
 \NewDocumentCommand{\nextProjectRef}{m O{}}{%
   \def\reponame{\directlua{tex.sprint(Utils.get_repository_name("\luaescapestring{#1}"))}}%
   {
@@ -638,9 +698,20 @@
   location  .initial:n = {}         % Default to empty
 }
 
-% Command to format date and location for timeline events
-% Usage: \nextDateAndLocation[<key=value pairs>]
-% Supported keys: startdate (yyyy-mm-dd or yyyy-mm), enddate (yyyy-mm-dd or yyyy-mm), location
+% Format date and location information for timeline events
+% Usage: \nextDateAndLocation[key=value, ...]
+% 
+% Supported keys:
+%   startdate - Start date in YYYY-MM-DD or YYYY-MM format (default: "Present")
+%   enddate   - End date in YYYY-MM-DD or YYYY-MM format (default: "Present")  
+%   location  - Location string (default: empty, will not display if empty)
+%
+% Examples:
+%   \nextDateAndLocation[startdate=2020-01, enddate=2023-12, location={San Francisco, CA}]
+%   \nextDateAndLocation[startdate=2021-03-15, location={Remote}]
+%   \nextDateAndLocation[startdate=2019-06, enddate=Present, location={New York, NY}]
+%
+% The command automatically parses and formats dates using Lua utilities.
 \NewDocumentCommand{\nextDateAndLocation}{ O{} }{%
   \keys_set:nn {timelineevent/dateandloc} {#1}%
   % Parse dates using Lua but handle formatting in LaTeX
@@ -652,8 +723,18 @@
 }
 \ExplSyntaxOff
 
+% Create styled tags for skills, strengths, or keywords
+% Usage: \nextTag{tag_text}
+%
+% Parameters:
+%   #1 - Text to display inside the tag
+%
+% Example: \nextTag{Problem Solving} \nextTag{Leadership} \nextTag{JavaScript}
+%
+% Creates rounded rectangular tags with colored borders, commonly used in
+% Strengths sections or for highlighting key skills and competencies.
 \newcommand{\nextTag}[1]{%
-  \tikz[baseline]\node[anchor=base,draw=body!30,rounded corners,inner xsep=1ex,inner ysep =0.75ex,text height=1.5ex,text depth=.25ex]{#1};
+  \tikz[baseline]\node[anchor=base,draw=body!30,rounded corners,inner xsep=1ex,inner ysep =0.75ex,text height=1.5ex,text depth=.25ex]{#1};\hspace{0.3em plus 0.1em minus 0.1em}%
 }
 
 %% ============================================================================
@@ -665,3 +746,19 @@
   \color{body}
   \raggedright
 }
+
+% Define helper command for setting hyperlink colors
+\ExplSyntaxOn
+\newcommand{\resume@sethypercolors}{%
+  \bool_if:NT \g_withhyper_bool {
+    \hypersetup{
+      linkcolor=link,
+      urlcolor=link,
+      citecolor=link
+    }
+  }
+}
+\ExplSyntaxOff
+
+% Set hyperlink colors using a hook that runs after color definitions
+\AddToHook{begindocument}{\resume@sethypercolors}
