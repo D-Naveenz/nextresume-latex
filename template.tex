@@ -1,7 +1,14 @@
 %%%%%%%%%%%%%%%%%
-%% This is The CV texmplate created using nextcv.cls, 
-%%    and the upgraded version of the sample.tex file provided by the original author.
-%% Written by LianTze Lim, Naveen Dharmathunga
+%% NextResume Template v2.0.0 - A Modern LaTeX Resume Template
+%% Created using nextresume.cls with enhanced features and styling
+%% Author: Naveen Dharmathunga (dasheenaveen@outlook.com)
+%% Based on original concepts by LianTze Lim
+%% ================================================================================
+%% This template showcases the capabilities of the NextResume class including:
+%% - Modern SVG icons and responsive layout
+%% - Lua-powered dynamic content generation  
+%% - Professional typography and color schemes
+%% - Hyperlinked contact information and references
 %% ================================================================================
 %% It may be distributed and/or modified under the
 %% conditions of the LaTeX Project Public License, either version 1.3
@@ -12,18 +19,11 @@
 %%%%%%%%%%%%%%%%
 
 % Set PDF/A standard
-%\DocumentMetadata{pdfstandard=A-2b, pdfversion=1.7, lang=en}
-%% Use the "normalphoto" option if you want a normal photo instead of cropped to a circle
-% \documentclass[10pt,a4paper,normalphoto]{nextcv}
-\documentclass[10pt,a4paper,ragged2e,withhyper]{nextcv}
-%% NextCV uses the fontawesome5 and packages.
-%% See http://texdoc.net/pkg/fontawesome5 for full list of symbols.
+% \DocumentMetadata{pdfstandard=A-2b, pdfversion=1.7, lang=en}
+\documentclass[10pt,a4paper,withhyper,fieldnames]{nextresume}
 
 % Change the page layout if you need to
 \geometry{left=1.25cm,right=1.25cm,top=1.5cm,bottom=1.5cm,columnsep=1.2cm}
-
-% The paracol package lets you typeset columns of text in parallel
-\usepackage{paracol}
 
 % Change the colours if you want to
 \definecolor{SlateGrey}{HTML}{2E2E2E}
@@ -44,273 +44,225 @@
 \colorlet{link}{DodgerBlue}
 \colorlet{body}{LightGrey}
 
-% Change some fonts, if necessary
-\renewcommand{\namefont}{\Huge\rmfamily\bfseries}
-\renewcommand{\personalinfofont}{\footnotesize}
-\renewcommand{\cvsectionfont}{\LARGE\rmfamily\bfseries}
-\renewcommand{\cvsubsectionfont}{\large\bfseries}
-
-
-% Change the bullets for itemize and rating marker
-% for \cvskill if you want to
-\renewcommand{\cvItemMarker}{{\small\textbullet}}
-% \renewcommand{\cvRatingMarker}{\faIcon{circle}}
-% ...and the markers for the date/location for \cvevent
-% \renewcommand{\cvDateMarker}{\faCalendar*[regular]}
-% \renewcommand{\cvLocationMarker}{\faMapMarker*}
-
-% Personal Information
-\name{Your Name Here}
-\jobtitle{Your Position or Tagline Here}
-\email{your_name@email.com}
-\phone{000-00-0000}
-% These are optional and you can remove them
-\homepage{www.homepage.com}
-\linkedin{your_id}
-\github{your_id}
-\medium{@medium_handle}
-\twitter{xhandle}
-%% Or you can declare your own field with
-%% \NewInfoFiled{fieldname}{symbol}[optional hyperlink prefix] and use it:
-% \NewInfoField{gitlab}{\faGitlab}[https://gitlab.com/]
-% \gitlab{your_id}
-
 \begin{document}
 %% ChkTeX will complain about wrong length of dashes. You can ignore it. or use {-} instead of -.
 %% https://tex.stackexchange.com/a/687676
 
 %% You can add multiple photos on the left or right
-\photo{2.8cm}{Globe_High}
+\begin{resumeheader}[3]
+    \profilephoto{Globe_High}{2.8cm}
 
-\makecvheader
-%% Depending on your tastes, you may want to make fonts of itemize environments slightly smaller
-% \AtBeginEnvironment{itemize}{\small}
+    \name{Alexandra Chen}
+    \jobtitle{Senior Full-Stack Developer \& Cloud Solutions Architect}
 
-%% Set the left/right column width ratio to 6:4.
-\columnratio{0.6}
+    % Contact Information
+    \email{alexandra.chen@techsolutions.com}
+    \phone{+1-555-234-5678}
+    % These are optional and you can remove them
+    \homepage{www.alexandra-chen.dev}
+    \linkedin{alexandra-chen-dev}
+    \github{alex-chen-dev}
+    \medium{@alex-tech-insights}
+    \twitter{alexchendev}
+    %% Or you can declare your own field with
+    %% \NewInfoFiled{fieldname}{symbol}[optional hyperlink prefix] and use it:
+    % \NewInfoField{gitlab}{\faGitlab}[https://gitlab.com/]
+    % \gitlab{your_id}
+\end{resumeheader}
 
-% Start a 2-column paracol. Both the left and right columns will automatically
-% break across pages if things get too long.
-\begin{paracol}{2}
-\cvsection{Experience}
+\begin{nextsection}{Profile}[\nextProfileMarker]
+    Innovative full-stack developer with 8+ years of experience architecting scalable cloud solutions and leading high-performance engineering teams. Expertise in modern web technologies, microservices architecture, and DevOps practices with a proven track record of delivering enterprise-grade applications.
+\end{nextsection}
 
-\cvevent{Job Title 1}{Company}{Month 20XX --- Ongoing}{Location}
-\cvsubproject{Your Project}{Your Role}{}{%
-  \begin{itemize}%
-  \item Project description 1
-  \item Project description 2
-  \end{itemize}%
-}{C\#, {.NET}, SQLite}%
+\begin{nextskills}[2]
+    \begin{skillsection}{Cloud Technologies}
+        \weightedskill{Azure}{4.5}
+        \weightedskill{AWS}{3.5}
+        \weightedskill{GCP}{4}
+    \end{skillsection}
 
-\cvsectionspace%
+    \begin{skillsection}{Programming Languages}
+        JavaScript/TypeScript, Python, Java, C\#, Go, Rust
+    \end{skillsection}
+
+    \begin{skillsection}{Frontend Technologies}
+        React, Vue.js, Angular, Next.js, Svelte, Tailwind CSS, Material-UI
+    \end{skillsection}
+
+    \begin{skillsection}{Backend \& APIs}
+        Node.js, Express, Django, FastAPI, Spring Boot, {}.NET Core, GraphQL, REST
+    \end{skillsection}
+
+    \begin{skillsection}{Databases \& Storage}
+        PostgreSQL, MongoDB, Redis, Elasticsearch, Firebase, DynamoDB
+    \end{skillsection}
+
+    \begin{skillsection}{DevOps \& Tools}
+        Docker, Kubernetes, Terraform, Jenkins, GitHub Actions, Prometheus, Grafana
+    \end{skillsection}
+\end{nextskills}
 
 
-\cvsection{Education}
+\begin{nextsection}{Experience}[\nextExperienceMarker]
+    \begin{nexttimeline}
+        \nexttimelineevent{\nextDateAndLocation[startdate=2021-03-01, location={San Francisco, CA}]}{
+            \nextItemHeading{Senior Full-Stack Developer \& Tech Lead}
+            \nextItemSubheading{CloudTech Solutions}
+            \begin{itemize}
+                \item Led 8 engineers developing microservices-based e-commerce platform serving 2M+ users
+                \item Architected real-time analytics dashboard reducing data processing time by 75\%
+                \item Established CI/CD pipelines increasing deployment frequency by 300\%
+            \end{itemize}
+            \smallskip
+            \nextTechstack{React, Node.js, PostgreSQL, AWS, Docker, Kubernetes}
+        }
 
-\cvevent{Ph.D.\ in Your Discipline}{Your University}{Sept 2002 --- June 2006}{Location}
-Thesis title: Wonderful Research
+        \nexttimelineevent{\nextDateAndLocation[startdate=2018-07-01, enddate=2021-02-28, location={Seattle, WA}]}{
+            \nextItemHeading{Full-Stack Developer}
+            \nextItemSubheading{InnovateTech Corp}
+            \begin{itemize}
+                \item Developed 12+ web applications using modern JavaScript frameworks
+                \item Optimized database performance improving response times by 40\%
+                \item Implemented responsive, accessible UIs and integrated payment systems
+            \end{itemize}
+            \smallskip
+            \nextTechstack{Vue.js, Python, Django, MongoDB, Azure, Redis}
+        }
 
-\divider%
+        \nexttimelineevent{\nextDateAndLocation[startdate=2016-09-01, enddate=2018-06-30, location={Austin, TX}]}{
+            \nextItemHeading{Junior Software Developer}
+            \nextItemSubheading{StartupHub Technologies}
+            \begin{itemize}
+                \item Built RESTful APIs and database schemas for startup products
+                \item Participated in agile development and contributed to open-source projects
+            \end{itemize}
+            \smallskip
+            \nextTechstack{JavaScript, Express.js, MySQL, Git, Docker}
+        }
+    \end{nexttimeline}
+\end{nextsection}
 
-\cvevent{M.Sc.\ in Your Discipline}{Your University}{Sept 2001 --- June 2002}{Location}
 
-\divider%
-
-\cvevent{B.Sc.\ in Your Discipline}{Stanford University}{Sept 1998 --- June 2001}{Location}
-Final Year Project: \textit{(Group Project)}\\
-\begin{itemize}
-\item \textbf{Title:} \textit{Project Title}
-\item \textbf{Role:} \textit{Your role}
-\item \textbf{Grade:} \textit{A+}
-\end{itemize}
-
-\cvsectionspace%
-
-% use ONLY \newpage if you want to force a page break for
-% ONLY the current column
+%% use ONLY \newpage if you want to force a page break for
+%% ONLY the current column
 \newpage
 
-\cvsection{Projects}
 
-\cvproject{Name 1, Customer experience optimizer and sales management system}
-{Your Role}{https://github.com/you/your-repository}{%
-  \begin{itemize}%
-    \item Project description 1
-    \item Project description 2
-  \end{itemize}%
-}{ASP.NET, Vue.js, Node.js, MS SQL}%
+\begin{nextsection}{Projects}[\nextProjectsMarker]
+    \begin{nexttimeline*}
+        \nexttimelineevent{\nextDateAndLocation[startdate=2023-01-01, enddate=2023-08-31]}{
+            \nextItemHeading{EcoTrack | Sustainable Living Analytics Platform}
+            \nextItemSubheading{Lead Developer \& System Architect}
+            \nextProjectRef{https://github.com/alex-chen-dev/ecotrack}[GitHub Repository]
+            \begin{itemize}
+                \item Built full-stack application tracking carbon footprint for 10K+ users
+                \item Implemented ML recommendations engine increasing engagement by 65\%
+                \item Achieved 99.9\% API uptime and Google Lighthouse score of 95+
+            \end{itemize}
+            \smallskip
+            \nextTechstack{React, TypeScript, Node.js, PostgreSQL, AWS Lambda, D3.js}
+        }
 
-\divider%
+        \nexttimelineevent{\nextDateAndLocation[startdate=2022-04-01, enddate=2022-10-31]}{
+            \nextItemHeading{DevOps Automation Suite | CI/CD Pipeline Management}
+            \nextItemSubheading{Technical Lead}
+            \nextProjectRef{https://github.com/alex-chen-dev/devops-suite}[Open Source Project]
+            \begin{itemize}
+                \item Developed DevOps toolchain reducing deployment time from 2 hours to 15 minutes
+                \item Created testing framework with 90\% coverage across 25+ microservices
+                \item Built monitoring dashboard adopted by 500+ developers
+            \end{itemize}
+            \smallskip
+            \nextTechstack{Docker, Kubernetes, Jenkins, Terraform, Prometheus, Grafana, Python}
+        }
 
-\cvproject{Name 2, Project title in descriptive format}
-{}{https://github.com/you/your-repository}{%
-  \begin{itemize}%
-    \item Project description 1
-    \item Project description 2
-  \end{itemize}%
-}{Java, React.js}%
-
-\cvsectionspace%
-
-
-\cvsection{Open-Source Contributions}
-
-\cvproject{Name1, Project title in descriptive format}
-{}{https://github.com/you/your-repository}{%
-  \begin{itemize}%
-    \item Project description 1
-    \item Project description 2
-  \end{itemize}%
-}{Java, React.js}%
-
-\divider%
-
-\cvproject{Name2, Project title in descriptive format}
-{}{https://github.com/you/your-repository}{%
-  \begin{itemize}%
-    \item Project description 1
-    \item Project description 2
-  \end{itemize}%
-}{Java, React.js}%
-
-%%% ==============================================================================================================
-%% Switch to the right column. This will now automatically move to the second
-%% page if the content is too long.
-\switchcolumn%
-
-\cvsection{Career Objective}
-
-A brief statement (2--3 sentences) highlighting your key qualifications, experience, and career goals.
-
-\cvsectionspace%
+        \nexttimelineevent{\nextDateAndLocation[startdate=2021-11-01, enddate=2022-03-31]}{
+            \nextItemHeading{Real-Time Chat Engine | Scalable Messaging Platform}
+            \nextItemSubheading{Full-Stack Developer}
+            \nextProjectRef{https://github.com/alex-chen-dev/chat-engine}[Live Demo]
+            \begin{itemize}
+                \item Architected WebSocket messaging system supporting 50K+ concurrent connections
+                \item Implemented end-to-end encryption with sub-100ms latency
+                \item Built PWA React frontend with offline synchronization
+            \end{itemize}
+            \smallskip
+            \nextTechstack{Socket.io, React, Redis, MongoDB, AWS ECS, WebRTC}
+        }
+    \end{nexttimeline*}
+\end{nextsection}
 
 
-\cvsection{Skills}
+\begin{nextsection}{Education}[\nextEducationMarker]
+    \begin{nexttimeline}
+        \nexttimelineevent{\nextDateAndLocation[startdate=2014-09, enddate=2016-06, location={Stanford, CA}]}{
+            \nextItemHeading{Computer Science | M.S.}
+            \nextItemSubheading{Stanford University}
+            \begin{itemize}
+                \item Specialization: Distributed Systems and Cloud Computing Architecture
+                \item Thesis: ``Optimizing Microservices Communication in Large-Scale Applications''
+                \item GPA: 3.9/4.0, Summa Cum Laude, TA for CS 142 \& CS 144
+            \end{itemize}
+        }
 
-\cvtagheader{Cloud Technologies}
-\cvskill{Azure}{4.5} %% Supports X.5 values.
-\cvtag{Virtual Machines}
-\cvtag{Azure DevOps}\\
-\cvtag{Azure Cosmos DB}
-
-\bigskip%
-
-\cvskill{AWS}{3} %% Supports X.5 values.
-\cvtag{EC2}
-\cvtag{RDS}
-
-\bigskip%
-
-\cvskill{GCP}{4} %% Supports X.5 values.
-\cvtag{BigQuery}
-\cvtag{Dataproc}
-\cvtag{Databrics}
-
-\divider\smallskip%
-
-\cvtagheader{Languages}
-\cvtag{Python}
-\cvtag{C\#}
-\cvtag{SQL}
-\cvtag{Java}\\
-\cvtag{Javascript}
-\cvtag{C++}
-
-\divider\smallskip
-
-\cvtagheader{Frameworks \& Libraries}
-\cvtag{Apache Spark}
-\cvtag{Pandas}
-\cvtag{NumPy}\\
-\cvtag{.NET}
-\cvtag{ASP.NET}
-\cvtag{Entity Framework}\\
-\cvtag{Microsoft Community Toolkit}
-\cvtag{WinUI}\\
-\cvtag{Spring-boot}
-\cvtag{Vue.js}
-\cvtag{Unity}
-
-\divider\smallskip
-
-% ONLY the current column
-% \newpage
-
-\cvtagheader{Databases}
-\cvtag{PostgreSQL}
-\cvtag{MySQL}\\
-\cvtag{MS SQL Server}
-
-\divider\smallskip
-
-\cvtagheader{Big Data Technologies}
-\cvtag{Databricks}
-\cvtag{Hive}
-\cvtag{Airflow}
-
-\divider\smallskip
-
-\cvtagheader{VCS}
-\cvtag{Git}
-\cvtag{GitHub}
-\cvtag{Bitbucket}\\
-\cvtag{Azure DevOps}
-
-\divider\smallskip
-
-\cvtagheader{Tools}
-\cvtag{Jupyter Notebooks}
-\cvtag{PyCharm}\\
-\cvtag{Visual Studio \& Code}
-\cvtag{Docker}
-\cvtag{Jira}
-\cvtag{Confluence}
-
-\cvsectionspace%
+        \nexttimelineevent{\nextDateAndLocation[startdate=2010-09, enddate=2014-06, location={Berkeley, CA}]}{
+            \nextItemHeading{Computer Science | B.S.}
+            \nextItemSubheading{University of California, Berkeley}
+            \begin{itemize}
+                \item Magna Cum Laude, Phi Beta Kappa, GPA: 3.8/4.0, Dean's List 6 semesters
+                \item Senior Capstone: Real-time collaborative code editor with 1000+ active users
+            \end{itemize}
+        }
+    \end{nexttimeline}
+\end{nextsection}
 
 
-\cvsection{Certifications}
-
-\cvcert{Certificate 1}{https://certificate/link/1}{Issuing Organization}
-
-\medskip%
-
-\cvcert{Certificate 2}{https://certificate/link/2}{Issuing Organization}
-
-\cvsectionspace%
+\begin{nextcertificates}
+    \nextCertificate{AWS Certified Solutions Architect Professional}{Amazon Web Services}{https://aws.amazon.com/certification/}
+    \nextCertificate{Certified Kubernetes Administrator (CKA)}{Cloud Native Computing Foundation}{https://www.cncf.io/certification/cka/}
+    \nextCertificate{Google Cloud Professional Cloud Architect}{Google Cloud}{https://cloud.google.com/certification/}
+    \nextCertificate{Microsoft Certified: Azure Solutions Architect Expert}{Microsoft}{https://docs.microsoft.com/en-us/certifications/}
+\end{nextcertificates}
 
 
-\cvsection{Archivements}
+\begin{nextsection}{Volunteering}[\nextVolunteeringMarker]
+    \begin{nexttimeline*}
+        \nexttimelineevent{\nextDateAndLocation[startdate=2020-01-01]}{
+            \nextItemHeading{Technical Mentor \& Code Reviewer}
+            \nextItemSubheading{Code for America | Open Source Contributor}
+            \begin{itemize}
+                \item Mentored 15+ junior developers through code reviews and pair programming
+                \item Contributed to 8 civic technology projects and led community workshops
+                \item Established coding bootcamp curriculum adopted by 3 local organizations
+            \end{itemize}
+            \smallskip
+            \nextTechstack{React, Node.js, Python, Git, Agile Methodologies}
+        }
+        
+        \nexttimelineevent{\nextDateAndLocation[startdate=2018-06-01, enddate=2021-12-31]}{
+            \nextItemHeading{Tech Lead \& Platform Architect}
+            \nextItemSubheading{TechForGood Initiative}
+            \begin{itemize}
+                \item Architected platform connecting 500+ volunteers with nonprofits
+                \item Implemented matching algorithm reducing coordination time by 60\%
+                \item Organized hackathons raising \$25K+ for local charities
+            \end{itemize}
+            \smallskip
+            \nextTechstack{Vue.js, Firebase, Cloud Functions, Progressive Web Apps}
+        }
+    \end{nexttimeline*}
+\end{nextsection}
 
-\cvachievement{\textbf{\faIcon{trophy}}}{Fantastic Achievement}{and some details about it}
 
-\divider%
-
-\cvachievement{\textbf{\faIcon{heart-pulse}}}{Another achievement}{more details about it of course}
-
-\divider%
-
-\cvachievement{\textbf{\faIcon{heart-pulse}}}{Another achievement}{more details about it of course}
-
-
-%% Yeah I didn't spend too much time making all the
-%% spacing consistent... sorry. Use \smallskip, \medskip,
-%% \bigskip, \vspace etc to make adjustments.
-\cvsectionspace%
-
-
-\cvsection{Referees}
-
-\cvref{Prof.\ Alpha Beta}{Role}{Institute}{a.beta@university.edu}
-{Address Line 1\\Address line 2}
-
-\divider%
-
-\cvref{Prof.\ Gamma Delta}{Role}{Institute}{g.delta@university.edu}
-{Address Line 1\\Address line 2}
-
-
-\end{paracol}
+\begin{nextsection}{Strengths}[\nextStrengthsMarker]
+    \nextTag{System Architecture}
+    \nextTag{Technical Leadership}
+    \nextTag{Performance Optimization}
+    \nextTag{Cross-Functional Collaboration}\\[0.5em]
+    \nextTag{DevOps \& Automation}
+    \nextTag{Mentoring \& Knowledge Transfer}
+    \nextTag{Problem-Solving}
+    \nextTag{Agile Development}
+\end{nextsection}
 
 
 \end{document}

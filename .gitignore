@@ -263,3 +263,7 @@ TSWLatexianTemp*
 
 # standalone packages
 *.sta
+
+# Compliled PDF files
+*.pdf
+svg-inkscape/*.*
