@@ -44,6 +44,7 @@
     <li>
       <a href="#about-the-project">About The Project</a>
       <ul>
+        <li><a href="#template-preview">Template Preview</a></li>
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
@@ -89,6 +90,23 @@ NextResume isn't just another LaTeX template—it's a **complete typesetting eco
 - **⚡ Lua-Powered**: Dynamic content generation, intelligent spacing, and advanced text processing
 - **🎨 Modern Design**: Clean, professional aesthetics that stand out while remaining readable
 - **🔧 Modular Architecture**: Every component is designed for easy customization and extension
+
+### 📸 **Template Preview**
+
+> **Note:** The following pages showcase NextResume's comprehensive feature set with realistic professional content. This is a demonstration template highlighting all available capabilities - your actual resume will be customized with your own information and can be as concise as needed.
+
+<div align="center">
+  
+**Page 1 - Profile & Core Information**
+<img src="pictures/template_page-0001.jpg" alt="NextResume Template Page 1" width="600"/>
+
+**Page 2 - Experience & Projects Timeline**  
+<img src="pictures/template_page-0002.jpg" alt="NextResume Template Page 2" width="600"/>
+
+**Page 3 - Education, Certifications & Skills**
+<img src="pictures/template_page-0003.jpg" alt="NextResume Template Page 3" width="600"/>
+
+</div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -427,7 +445,7 @@ This license ensures that NextResume remains freely available while maintaining 
 **Naveen Dharmathunga** - *Creator & Lead Developer*
 - 🐦 Twitter: [@XerDuke](https://x.com/dharmathunga)  
 - 📧 Email: dasheenaveen@outlook.com
-- 💼 LinkedIn: [Naveen Dharmathunga](https://linkedin.com/in/naveen-dharmathunga)
+- 💼 LinkedIn: [Naveen Dharmathunga](https://www.linkedin.com/in/dasheewd)
 
 **Project Links:**
 - 🔗 Repository: [NextResume on GitHub](https://github.com/D-Naveenz/NextResume)
