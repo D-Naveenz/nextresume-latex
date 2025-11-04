@@ -57,6 +57,13 @@ function Utils.parse_date(date_str)
   return date_str
 end
 
+--- Capitalize the first character of the string
+--- @param str string target string
+--- @return string - the string with capitalized first character
+function Utils.capitalizeFirst(str)
+  return str:sub(1, 1):upper() .. str:sub(2):lower()
+end
+
 -- Simple test function to verify Lua is working
 function Utils.test_function()
   return "Lua Utils is working!"

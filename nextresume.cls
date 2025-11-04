@@ -70,8 +70,7 @@
 \RequirePackage{svg}           % SVG support (requires graphicx)
 
 %% 7. TEXT AND LAYOUT PACKAGES
-\RequirePackage{array}         % Extended array and tabular (required by tabularray)
-\RequirePackage{tabularray}    % Modern table formatting
+\RequirePackage{array}         % Extended array and tabular
 \RequirePackage{multicol}      % Multiple columns
 \RequirePackage[inline]{enumitem} % Enhanced lists
 
@@ -137,11 +136,11 @@
 \colorlet{link}{blue}
 
 % Define text styles optimized for 10pt base font
-\newcommand{\nextNameStyle}[1]{{\huge\bfseries\color{name}#1}}%          % 20.74pt -> better for 10pt base
-\newcommand{\nextTaglineStyle}[1]{{\large\itshape\color{tagline}#1}}%     % 12pt (unchanged - good proportion)
-\newcommand{\nextPersonalInfoStyle}[1]{{\footnotesize\bfseries#1}}%       % 8pt (unchanged - appropriate)
-\newcommand{\nextHeadingStyle}[1]{{\Large\bfseries\color{heading}#1}}%    % 14.4pt -> reduced from LARGE (17.28pt)
-\newcommand{\nextSubheadingStyle}[1]{{\large\bfseries\color{heading}#1}}% % 12pt -> reduced from Large (14.4pt)
+\newcommand{\next@style@name}[1]{{\huge\bfseries\color{name}\MakeUppercase{#1}}}
+\newcommand{\next@style@tagline}[1]{{\large\itshape\color{tagline}#1}}
+\newcommand{\next@style@info}[1]{{\footnotesize\bfseries#1}}
+\newcommand{\next@style@heading}[1]{{\headerfont\Large\bfseries\color{heading}#1}}
+\newcommand{\next@style@timelinedate}{\footnotesize\color{emphasis}}
 
 % Configure itemize marker (enumitem already loaded above)
 \setlist[itemize]{label=\nextItemMarker}
@@ -175,7 +174,10 @@
 
 \begin{luacode*}
   -- Create a new TokenGrid instance for personal info
-  next_personal_info = TokenGrid:new("\\resume@hidefieldnamesvalue", "\\resume@withhypervalue")
+  -- Convert string boolean values to actual Lua booleans
+  local hideFieldNames = "\resume@hidefieldnamesvalue" == "true"
+  local withhyper = "\resume@withhypervalue" == "true"
+  next_personal_info = TokenGrid:new(hideFieldNames, withhyper)
 \end{luacode*}
 
 % This command is a higher-level utility for defining new fields (e.g., email, phone) with associated symbols and optional hyperlink prefixes.
@@ -296,29 +298,31 @@
   \resume@profilephoto\hfill%
   \begin{minipage}{\dimexpr\linewidth-\resume@profilephoto@width-\resume@profilephoto@hspace\relax}%
     \raggedright%
-    {\nextNameStyle{\@name}\par}
+    {\next@style@name{\@name}\par}
     \medskip
-    {\nextTaglineStyle{\@jobtitle}\par}
+    {\next@style@tagline{\@jobtitle}\par}
     \medskip
-    {\nextPersonalInfoStyle{\resume@info@printfields{#1}}\par}
+    {\next@style@info{\resume@info@printfields{#1}}\par}
   \end{minipage}\par
   \vspace{6pt}
   \endgroup
 }
+
+%% ============================================================================
+%% Section Environment
+%% ============================================================================
 
 % The default section environment with optional icon
 \NewDocumentEnvironment{nextsection}{m O{}}{%
   \par\vspace{1.5\baselineskip}\noindent % Add vertical space
   % Add the section title in a table to align with the icon if provided
   \IfValueTF{#2}{%
-    \begin{tblr}{stretch = 0, colspec = {Q[h,l]l}, colsep=0.4em}%
-      #2 & \nextHeadingStyle{#1}\\
-    \end{tblr}%
+    \raisebox{-0.15\height}{#2} \hspace{0.4em} \next@style@heading{#1}
   }{%
-    \nextHeadingStyle{\MakeUppercase{#1}}
+    \next@style@heading{#1}
   }%
   % Add a horizontal rule rest of the line
-  \hspace{2ex}{\color{headingrule}\hrulefill}
+  \hspace{0.8em} {\color{headingrule}\hrulefill}
   \par\vspace{0.5\baselineskip} % Add some space after the section heading
 }{%
   \par
@@ -466,7 +470,7 @@
       text width=\datewidth cm,
       align=right,
       anchor=east,
-      font=\tiny\color{emphasis}
+      font=\next@style@timelinedate
     },
     timeline/.style={
       draw=accent!80, 
@@ -550,7 +554,7 @@
   \@ifundefined{stareventgap}{\newlength{\stareventgap}}{}
   
   \setlength{\staradatewidth}{3cm}      % Date column width (matches TikZ version)
-  \setlength{\stareventgap}{1cm}         % Space between columns (reduced for tblr)
+  \setlength{\stareventgap}{1cm}         % Space between columns (reduced for table version)
   
   % Calculate content width: total width - date width - column gap - safety margin
   \@ifundefined{starcontentwidth}{\newlength{\starcontentwidth}}{}
@@ -566,7 +570,7 @@
       p{\starcontentwidth}                             % Left-aligned content column
       @{}                                              % No right padding
     }
-    {\color{emphasis}##1} & {##2} \\
+    {\next@style@timelinedate ##1} & {##2} \\
     \end{tabular}%
     \par\vspace{1em}%
   }%
@@ -599,24 +603,25 @@
 %% Utility Commands
 %% ============================================================================
 
+\ExplSyntaxOn
 % Project Reference Command
 % Parameters: 
 % - {string} #1 - Repository URL
 % - {string} [#2] - Deployment Location (optional)
 \NewDocumentCommand{\nextProjectRef}{m O{}}{%
-  \def\reponame{\directlua{tex.sprint(Utils.get_repository_name(#1))}}%
+  \def\reponame{\directlua{tex.sprint(Utils.get_repository_name("\luaescapestring{#1}"))}}%
   {
-    \normalfont
-    \textbf{Repository:}~{\BeginAccSupp{method=pdfstringdef,ActualText={\rolename:}}\nextProjectLinkMarker\EndAccSupp{}\reponame}%
+    \normalfont\color{emphasis}
+    \raisebox{-0.1\height}{\nextProjectLinkMarker}\hspace{0.5em}\textbf{Repository:}~
+    \bool_if:NTF \g_withhyper_bool {\href{#1}{\reponame}}{\reponame}%
     \IfValueTF{#2}{%
       ~\hfill~
       \textbf{Deployment:}~{#2}%
     }{}%
-    \par
+    \par\medskip
   }
 }
 
-\ExplSyntaxOn
 % Simplified date handling using Lua Utils
 % Declare variables for date and location storage
 \tl_new:N \l_timelineevent_startdate_tl
@@ -642,7 +647,7 @@
   \def\parsedstartdate{\directlua{tex.sprint(Utils.parse_date("\luaescapestring{\tl_use:N \l_timelineevent_startdate_tl}"))}}%
   \def\parsedenddate{\directlua{tex.sprint(Utils.parse_date("\luaescapestring{\tl_use:N \l_timelineevent_enddate_tl}"))}}%
   % Format using LaTeX (easier to debug)
-  \small{\parsedstartdate~--~\parsedenddate}%
+  {\parsedstartdate\ --\ \parsedenddate}%
   \tl_if_empty:NF \l_timelineevent_location_tl {\\{\tl_use:N \l_timelineevent_location_tl}}%
 }
 \ExplSyntaxOff

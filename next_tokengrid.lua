@@ -1,4 +1,5 @@
--- NextResume Lua implementation of TokenGrid
+Utils = require("next_utils")
+
 -- TokenGrid class definition
 local TokenGrid = {}
 TokenGrid.__index = TokenGrid
@@ -28,12 +29,12 @@ local function get_latex_field_string(self, field_name, text, hyperlink)
   if self.hideFieldNames then
     symbol_part = string.format(
       "{\\BeginAccSupp{method=escape,ActualText={%s:}}\\normalfont %s\\EndAccSupp{}}",
-      field_name, symbol
+      Utils.capitalizeFirst(field_name), symbol
     )
   else
     symbol_part = string.format(
-      "{\\normalfont %s\\hspace{0.3em}%s:}",
-      symbol, field_name
+      "{\\raisebox{-0.2\\height}{%s}\\hspace{0.5em}\\normalfont %s:}",
+      symbol, Utils.capitalizeFirst(field_name)
     )
   end
 
@@ -52,7 +53,7 @@ local function get_latex_field_string(self, field_name, text, hyperlink)
 
   -- Combine all parts efficiently
   return string.format(
-    [[\begin{tblr}{stretch = 0, colspec = {Q[h,l]l}, colsep=0.4em} %s & %s \end{tblr}]],
+    [[%s~%s]],
     symbol_part, text_part
   )
 end
@@ -130,7 +131,7 @@ function TokenGrid:build_grid(num_columns)
     if i % num_columns == 0 then
       -- End of row - only add \\ if not the last row
       if i < #self.fields then
-        table.insert(result, [[ \\ ]])
+        table.insert(result, [[ \\[0.5em] ]])
       end
     else
       -- Not end of row - add column separator if not the last field
