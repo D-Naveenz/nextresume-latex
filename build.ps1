@@ -3,7 +3,7 @@
 # If no filename is provided, defaults to template.tex
 
 param(
-    [string]$InputFile = "template.tex"
+    [string]$InputFile = "resume.tex"
 )
 
 Write-Host "Building LaTeX document: $InputFile" -ForegroundColor Green

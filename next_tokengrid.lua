@@ -28,7 +28,7 @@ local function get_latex_field_string(self, field_name, text, hyperlink)
   local symbol_part
   if self.hideFieldNames then
     symbol_part = string.format(
-      "{\\BeginAccSupp{method=escape,ActualText={%s:}}\\normalfont %s\\EndAccSupp{}}",
+      "{\\BeginAccSupp{method=escape,ActualText={%s:}}%s\\EndAccSupp{}}",
       Utils.capitalizeFirst(field_name), symbol
     )
   else

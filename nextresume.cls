@@ -173,18 +173,24 @@
 \def\nextProjectLinkMarker{\nextSVGIcon{github}[1em]}%
 
 %% ============= Personal Info Data Structure (Lua Implementation) =============
-
-% Define boolean values for Lua
-\newcommand{\resume@hidefieldnamesvalue}{\bool_if:NT \g_fieldnames_bool { false } \bool_if:NF \g_fieldnames_bool { true }} % Inverted logic for fieldnames option
-\newcommand{\resume@withhypervalue}{\bool_if:NT \g_withhyper_bool { true } \bool_if:NF \g_withhyper_bool { false }}
-
 \begin{luacode*}
-  -- Create a new TokenGrid instance for personal info
-  -- Convert string boolean values to actual Lua booleans
-  local hideFieldNames = "\resume@hidefieldnamesvalue" == "true"
-  local withhyper = "\resume@withhypervalue" == "true"
+  -- Get boolean values with error handling
+  local success_fieldnames, fieldnames_result = pcall(Utils.get_latex3_boolean, "g_fieldnames_bool")
+  local success_withhyper, withhyper_result = pcall(Utils.get_latex3_boolean, "g_withhyper_bool")
+  
+  -- Handle results with defaults
+  local fieldnames_enabled = success_fieldnames and fieldnames_result or false -- fieldnames option shows names
+  local withhyper = success_withhyper and withhyper_result or false
+  
+  -- TokenGrid expects hideFieldNames as first parameter, so we invert fieldnames_enabled
+  local hideFieldNames = not fieldnames_enabled
+  
+  texio.write_nl("DEBUG: fieldnames_enabled=" .. tostring(fieldnames_enabled) .. " hideFieldNames=" .. tostring(hideFieldNames) .. " withhyper=" .. tostring(withhyper))
+  
+  -- Create TokenGrid: first param is hideFieldNames, second is withhyper
   next_personal_info = TokenGrid:new(hideFieldNames, withhyper)
 \end{luacode*}
+
 
 % Define new personal information fields with icons and optional hyperlinks
 % Usage:
@@ -617,7 +623,7 @@
   %
   % Example: \nextCertificate{AWS Certified Solutions Architect}{Amazon Web Services}{https://aws.amazon.com/certification/}
   \newcommand{\nextCertificate}[3]{%
-    \item \bfseries\textcolor{emphasis}{##1 | ##2} \\ \small{\href{##3}{##3}}
+    \item \bfseries\textcolor{emphasis}{##1 | ##2} \\ \normalfont\small{\href{##3}{##3}}
   }%
 
   \begin{nextsection}{Certificates}[\nextCertificatesMarker]%

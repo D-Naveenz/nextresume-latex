@@ -69,4 +69,32 @@ function Utils.test_function()
   return "Lua Utils is working!"
 end
 
+--- Function to get the LaTeX3 boolean state as a native Lua boolean
+--- Enhanced with error handling and proper backslash processing
+--- @param boolname string The name of the LaTeX3 boolean (with or without backslashes)
+--- @return boolean true if the LaTeX3 boolean is true, false otherwise
+function Utils.get_latex3_boolean(boolname)
+  local success, result = pcall(function()
+    -- Clean the boolean name - remove leading backslashes if present
+    local clean_name = boolname:gsub("^\\+", "")
+    
+    -- Pre-create token objects for the specific boolean and a "true" constant for comparison
+    local bool_token = token.create(clean_name)
+    local true_token = token.create("c_true_bool")
+
+    -- The mode of the boolean token is what determines its state (0 or 1)
+    -- Comparing it to the mode of a known true boolean gives a Lua boolean result
+    return bool_token.mode == true_token.mode
+  end)
+  
+  if success then
+    return result
+  else
+    -- Enhanced error reporting
+    texio.write_nl("WARNING: Failed to read LaTeX3 boolean '" .. tostring(boolname) .. "', defaulting to false")
+    texio.write_nl("ERROR: " .. tostring(result))
+    return false
+  end
+end
+
 return Utils
