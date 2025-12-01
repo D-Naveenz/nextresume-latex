@@ -97,13 +97,13 @@ NextResume isn't just another LaTeX template—it's a **complete typesetting eco
 
 <div align="center">
   
-**Page 1 - Profile & Core Information**
+**Page 1 - Profile & Core Information** 
 <img src="pictures/template_page-0001.jpg" alt="NextResume Template Page 1" width="600"/>
 
-**Page 2 - Display Timeline Variations**  
+**Page 2 - Display Timeline Variations** 
 <img src="pictures/template_page-0002.jpg" alt="NextResume Template Page 2" width="600"/>
 
-**Page 3 - Optional Sections**
+**Page 3 - Optional Sections** 
 <img src="pictures/template_page-0003.jpg" alt="NextResume Template Page 3" width="600"/>
 
 </div>
