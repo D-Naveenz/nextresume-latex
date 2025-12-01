@@ -251,10 +251,8 @@
   \hypersetup{
     pdfauthor={#1},
     pdftitle={Resume~-~#1},
-    pdfsubject={Resume~of~#1~-~#2},
-    pdfkeywords={Resume,~Curriculum~Vitae,~CV,~#1,~#2},
-    pdfcreator={NextResume~v2.0.0},
-    pdfproducer={LaTeX~with~NextResume~class}
+    pdfsubject={Resume~of~#1~-~#2,~Created~using~NextResume~LaTeX~Template},
+    pdfkeywords={Resume,~Curriculum~Vitae,~CV,~#1,~#2,~NextResume,~LaTeX,~LuaLaTeX}
   }
 }
 
@@ -350,6 +348,7 @@
 % Resume Skills Environment. Use \columnbreak to break columns manually.
 % Parameters: [number of columns (default 1)]
 \NewDocumentEnvironment{nextskills}{ O{1} }{%
+  % [Obsolete]
   % Parameters: #1 = rating value (0-5, supports 0.5 increments)
   \NewDocumentCommand{\nextRatingBox}{m}{%
     \BeginAccSupp{method=plain,ActualText={##1}}%
@@ -394,6 +393,7 @@
     \EndAccSupp{}%
   }
 
+  % [Obsolete]
   % Add a skill with weighted rating
   % Use accsupp so that the actual numeric value is copied/pasted and also support 0.5, 1.5, 2.5, 3.5, 4.5
   % Parameters: <skill name> <rating out of 5>
