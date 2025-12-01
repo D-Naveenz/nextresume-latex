@@ -95,17 +95,23 @@ NextResume isn't just another LaTeX template—it's a **complete typesetting eco
 
 > **Note:** The following pages showcase NextResume's comprehensive feature set with realistic professional content. This is a demonstration template highlighting all available capabilities - your actual resume will be customized with your own information and can be as concise as needed.
 
-<div align="center">
-  
-**Page 1 - Profile & Core Information**<br>
-<img src="pictures/template_page-0001.jpg" alt="NextResume Template Page 1" width="600"/>
+<style>
+  .container{
+    width: 100%;
+  }
+  .preview{
+    display: flex;
+    align-items: center;
+  }
+  .preview img{
+    width: calc(100% / 3);
+  }
+</style>
 
-**Page 2 - Display Timeline Variations**<br>
-<img src="pictures/template_page-0002.jpg" alt="NextResume Template Page 2" width="600"/>
-
-**Page 3 - Optional Sections**<br>
-<img src="pictures/template_page-0003.jpg" alt="NextResume Template Page 3" width="600"/>
-
+<div class="container preview" align="center">
+  <img src="pictures/template_page-0001.jpg" alt="NextResume Template Page 1"/>
+  <img src="pictures/template_page-0002.jpg" alt="NextResume Template Page 2"/>
+  <img src="pictures/template_page-0003.jpg" alt="NextResume Template Page 3"/>
 </div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
